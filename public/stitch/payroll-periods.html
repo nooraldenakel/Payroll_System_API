@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Payroll Periods - Institution Payroll</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&amp;family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-surface": "#171d1c",
+                            "error": "#ba1a1a",
+                            "surface-container": "#eaefed",
+                            "surface-container-highest": "#dee4e2",
+                            "primary-fixed": "#84f5ee",
+                            "error-container": "#ffdad6",
+                            "surface-container-low": "#eff5f3",
+                            "inverse-surface": "#2c3131",
+                            "on-tertiary": "#ffffff",
+                            "on-surface-variant": "#3d4948",
+                            "inverse-on-surface": "#edf2f0",
+                            "soft-teal": "#e6fffa",
+                            "tertiary": "#bc0b3b",
+                            "secondary-fixed": "#e1e0ff",
+                            "on-tertiary-fixed": "#40000d",
+                            "on-primary-container": "#003f3d",
+                            "primary": "#006a66",
+                            "secondary-container": "#6063ee",
+                            "secondary-fixed-dim": "#c0c1ff",
+                            "on-primary-fixed-variant": "#00504d",
+                            "tertiary-fixed-dim": "#ffb2b7",
+                            "tertiary-container": "#ff7583",
+                            "secondary": "#4648d4",
+                            "surface": "#f5faf9",
+                            "outline-variant": "#bcc9c7",
+                            "background": "#f5faf9",
+                            "outline": "#6d7a78",
+                            "on-secondary-fixed": "#07006c",
+                            "on-primary": "#ffffff",
+                            "tertiary-fixed": "#ffdadb",
+                            "vibrant-indigo": "#6366f1",
+                            "on-secondary": "#ffffff",
+                            "surface-container-high": "#e4e9e8",
+                            "mint-gradient-start": "#38b2ac",
+                            "surface-dim": "#d6dbda",
+                            "on-primary-fixed": "#00201e",
+                            "primary-container": "#38b2ac",
+                            "on-background": "#171d1c",
+                            "surface-variant": "#dee4e2",
+                            "on-error": "#ffffff",
+                            "mint-gradient-end": "#2c7a7b",
+                            "electric-pink": "#f43f5e",
+                            "surface-tint": "#006a66",
+                            "on-secondary-container": "#fffbff",
+                            "primary-fixed-dim": "#66d8d2",
+                            "surface-container-lowest": "#ffffff",
+                            "surface-bright": "#f5faf9",
+                            "on-error-container": "#93000a",
+                            "inverse-primary": "#66d8d2",
+                            "on-tertiary-container": "#750020",
+                            "on-secondary-fixed-variant": "#2f2ebe",
+                            "on-tertiary-fixed-variant": "#92002a"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "margin-mobile": "20px",
+                            "margin-desktop": "40px",
+                            "unit": "4px",
+                            "element-gap": "12px",
+                            "gutter-md": "24px"
+                    },
+                    "fontFamily": {
+                            "label-sm": [
+                                    "JetBrains Mono"
+                            ],
+                            "headline-lg-mobile": [
+                                    "Hanken Grotesk"
+                            ],
+                            "headline-lg": [
+                                    "Hanken Grotesk"
+                            ],
+                            "title-md": [
+                                    "Hanken Grotesk"
+                            ],
+                            "data-tabular": [
+                                    "Inter"
+                            ],
+                            "body-sm": [
+                                    "Inter"
+                            ],
+                            "display-lg": [
+                                    "Hanken Grotesk"
+                            ],
+                            "body-md": [
+                                    "Inter"
+                            ]
+                    },
+                    "fontSize": {
+                            "label-sm": [
+                                    "12px",
+                                    {
+                                            "lineHeight": "16px",
+                                            "letterSpacing": "0.05em",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "headline-lg-mobile": [
+                                    "26px",
+                                    {
+                                            "lineHeight": "32px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "headline-lg": [
+                                    "32px",
+                                    {
+                                            "lineHeight": "40px",
+                                            "letterSpacing": "-0.01em",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "title-md": [
+                                    "20px",
+                                    {
+                                            "lineHeight": "28px",
+                                            "fontWeight": "600"
+                                    }
+                            ],
+                            "data-tabular": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "fontWeight": "500"
+                                    }
+                            ],
+                            "body-sm": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "display-lg": [
+                                    "48px",
+                                    {
+                                            "lineHeight": "56px",
+                                            "letterSpacing": "-0.03em",
+                                            "fontWeight": "800"
+                                    }
+                            ],
+                            "body-md": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "400"
+                                    }
+                            ]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .custom-shadow { box-shadow: 0 4px 20px -2px rgba(56, 178, 172, 0.08), 0 1px 3px 0 rgba(56, 178, 172, 0.04); }
+        .hover-lift:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 25px -3px rgba(56, 178, 172, 0.12), 0 4px 6px -2px rgba(56, 178, 172, 0.05); }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex antialiased">
+<!-- SideNav -->
+<nav class="hidden md:flex flex-col bg-white border-r border-outline-variant/50 shadow-xl shadow-primary/5 fixed left-0 top-0 h-full z-50 overflow-y-auto w-64">
+<div class="p-6 pb-2">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-mint-gradient-start to-mint-gradient-end flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h2 class="text-title-md font-title-md font-black text-primary">Payroll Admin</h2>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Gov Division</p>
+</div>
+</div>
+<button class="w-full bg-gradient-to-r from-mint-gradient-start to-mint-gradient-end text-on-primary rounded-xl py-3 px-4 font-label-sm text-label-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] mb-6">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Payroll Run
+            </button>
+</div>
+<div class="flex-1 px-2 space-y-1">
+ 
+        param($m) $m.Value -replace 'href="/stitch/payroll-periods.html"', 'href="/stitch/dashboard.html"'
+    
+<a class="flex items-center gap-3 bg-primary-container text-on-primary-container rounded-xl py-3 px-6 mx-2 border-l-4 border-primary shadow-sm scale-95 transition-transform duration-150 text-label-sm font-label-sm" href="#" style="transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+                Payroll Periods
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="/stitch/excel-import.html">
+<span class="material-symbols-outlined">upload_file</span>
+                Excel Import
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="/stitch/employees.html">
+<span class="material-symbols-outlined">groups</span>
+                Employees
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="/stitch/reports.html">
+<span class="material-symbols-outlined">assessment</span>
+                Reports
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined">history</span>
+                Audit Log
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="/stitch/settings.html">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</div>
+<div class="p-4 mt-auto border-t border-outline-variant/30 space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+                Help Center
+            </a>
+<a class="flex items-center gap-3 text-on-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300 hover:scale-[1.02] text-label-sm font-label-sm" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 w-full md:pl-64 flex flex-col min-h-screen relative">
+<!-- Ambient Background Gradients -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+<div class="absolute top-0 left-[20%] w-96 h-96 bg-primary-fixed/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-70"></div>
+<div class="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary-fixed/20 rounded-full mix-blend-multiply filter blur-[120px] opacity-60"></div>
+</div>
+<!-- TopNavBar -->
+<header class="sticky top-0 bg-surface/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm shadow-primary/5 flex justify-between items-center w-full px-margin-desktop h-16 z-40">
+<!-- Mobile Menu Toggle (Visible only on small screens) -->
+<button class="md:hidden text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Brand (Visible only on small screens if nav is hidden, otherwise hide to avoid duplication) -->
+<div class="md:hidden text-title-md font-title-md font-bold text-primary">
+                Institution Payroll
+            </div>
+<!-- Search -->
+<div class="hidden md:flex items-center bg-surface-container-low rounded-xl px-4 py-2 w-96 focus-within:ring-2 focus-within:ring-primary/30 focus-within:bg-white transition-all shadow-inner">
+<span class="material-symbols-outlined text-on-surface-variant mr-3 text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/60 p-0" placeholder="Search employees, ID, or periods..." type="text"/>
+</div>
+<!-- Actions & Profile -->
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-all duration-300 hover:scale-[1.02] relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-all duration-300 hover:scale-[1.02]">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-low transition-all duration-300 hover:scale-[1.02]">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="ml-4 pl-4 border-l border-outline-variant/30 flex items-center gap-3 cursor-pointer group">
+<div class="w-9 h-9 rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+<img alt="Aziz Sulaiman, Admin Officer" class="w-full h-full object-cover" data-alt="A professional headshot of a corporate administrator in a modern office setting, bright lighting, soft neutral background, realistic photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhlX2pDWA5TMkigxglT3_rMlSLEtdXz2lvJn_WLGMnbThK7-rxzJThCAoEQe3W4LJWDHhkvdifs-ddztpgyRQDs8QBttUA5QYNsBiNqDc0_rZG21VVgA_69LLPH8F2NRQRKX4bUo1biQSQNevl5H8uOz7OiVEUc_1atpvLyuAjf_0Vvpbf_QYeJPM5cq8dZiUl1Uwu4y2T5oPcdvVc5HpqiOlksc952ujgzVQ9LIBMUd0a7kLtvhqzcg"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-margin-desktop space-y-8 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Payroll Periods</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Manage and track all historical and active payroll cycles.</p>
+</div>
+<button class="bg-gradient-to-r from-mint-gradient-start to-mint-gradient-end text-on-primary rounded-xl py-3 px-6 font-label-sm text-label-sm flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
+<span class="material-symbols-outlined">add_circle</span>
+                    Create New Period
+                </button>
+</div>
+<!-- Filters -->
+<div class="glass-panel rounded-xl p-4 flex flex-col md:flex-row gap-4 custom-shadow items-center justify-between">
+<div class="flex flex-1 items-center bg-white rounded-xl px-4 py-2 border border-outline-variant/40 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/50 transition-all w-full md:w-auto">
+<span class="material-symbols-outlined text-outline mr-3">search</span>
+<input class="bg-transparent border-none focus:ring-0 w-full text-body-sm font-body-sm text-on-surface p-0" placeholder="Search periods..." type="text"/>
+</div>
+<div class="flex gap-4 w-full md:w-auto">
+<div class="relative w-full md:w-48">
+<select class="appearance-none w-full bg-white border border-outline-variant/40 rounded-xl px-4 py-2.5 text-body-sm font-body-sm text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer">
+<option value="">All Statuses</option>
+<option value="active">Active</option>
+<option value="draft">Draft</option>
+<option value="archived">Archived</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+<div class="relative w-full md:w-40">
+<select class="appearance-none w-full bg-white border border-outline-variant/40 rounded-xl px-4 py-2.5 text-body-sm font-body-sm text-on-surface focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all cursor-pointer">
+<option value="2026">2026</option>
+<option value="2025">2025</option>
+<option value="2024">2024</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface-variant p-2.5 rounded-xl transition-all">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1: Active -->
+<div class="bg-white rounded-xl p-6 custom-shadow hover-lift transition-all duration-300 relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">August 2026</h3>
+<p class="text-label-sm font-label-sm text-outline mt-1">Ref: PR-2608-gov</p>
+</div>
+<span class="bg-primary-container/30 text-primary px-3 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 border border-primary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Active
+                        </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface-container-low p-3 rounded-lg">
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Employees</p>
+<p class="text-data-tabular font-data-tabular text-on-surface">1,452</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg">
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Total Payroll</p>
+<p class="text-data-tabular font-data-tabular text-on-surface">$4.2M</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-4">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-variant">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Small avatar of an admin, friendly face, corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlL70-Xhtya9D8SLwnMeTMKOPklbhfpB93wZhndjvnLddGspSqZB2Tv-W0KlrjuD6eupOIEGMx9Es3yy5F13eklQ_v3FkqPwvTFBV-La6kAR-YfL1ArWZjzEdZknsckGWz9oGwj0QWpkSsNOLJAbnpMmkDB9n-TL_wmthglp-uvNbS5_ZGtrz4A_FuaGNKLcs-O-YhKiCZ4G5zbTfiLhl0iXNhjyvl75so8g2XIhiXia8vR6NlqeiTrA"/>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">
+<span class="text-on-surface">A. Sulaiman</span> created on Aug 1, 2026
+                        </div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary/10 hover:bg-primary/20 text-primary py-2 px-4 rounded-lg text-label-sm font-label-sm transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+                            View
+                        </button>
+<button class="flex-1 border border-outline-variant hover:bg-surface-container-low text-on-surface-variant py-2 px-4 rounded-lg text-label-sm font-label-sm transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                            Import
+                        </button>
+</div>
+</div>
+<!-- Card 2: Draft -->
+<div class="bg-white rounded-xl p-6 custom-shadow hover-lift transition-all duration-300 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-surface-variant"></div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">September 2026</h3>
+<p class="text-label-sm font-label-sm text-outline mt-1">Ref: PR-2609-gov</p>
+</div>
+<span class="bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-sm border border-outline-variant/50">
+                            Draft
+                        </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6 opacity-70">
+<div class="bg-surface-container-low p-3 rounded-lg border border-dashed border-outline-variant">
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Employees</p>
+<p class="text-data-tabular font-data-tabular text-on-surface">--</p>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-dashed border-outline-variant">
+<p class="text-label-sm font-label-sm text-on-surface-variant mb-1">Total Payroll</p>
+<p class="text-data-tabular font-data-tabular text-on-surface">--</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-4">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">system_update_alt</span>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface-variant">
+                            System generated on Aug 15, 2026
+                        </div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface py-2 px-4 rounded-lg text-label-sm font-label-sm transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                            Setup
+                        </button>
+</div>
+</div>
+<!-- Card 3: Archived -->
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/30 hover-lift transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-title-md font-title-md text-on-surface-variant">July 2026</h3>
+<p class="text-label-sm font-label-sm text-outline mt-1">Ref: PR-2607-gov</p>
+</div>
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+                            Archived
+                        </span>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-surface p-3 rounded-lg">
+<p class="text-label-sm font-label-sm text-outline mb-1">Employees</p>
+<p class="text-data-tabular font-data-tabular text-on-surface-variant">1,448</p>
+</div>
+<div class="bg-surface p-3 rounded-lg">
+<p class="text-label-sm font-label-sm text-outline mb-1">Total Payroll</p>
+<p class="text-data-tabular font-data-tabular text-on-surface-variant">$4.18M</p>
+</div>
+</div>
+<div class="flex items-center gap-2 mb-6 border-b border-outline-variant/30 pb-4">
+<div class="w-6 h-6 rounded-full overflow-hidden bg-surface-variant">
+<img alt="Avatar" class="w-full h-full object-cover" data-alt="Avatar of an admin." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1JZ_3WJZ4wlyf095ylcogrKGgEPIGniSk43J3goKqpSKqsbfrJXZA96SG0TS-xH2Z_jakDh568tka3Zo-kHvvTfPCPfOkLamSJQkZco0UWoNzWylje0xxG6-nvTzTj88bBIyaGXgzoeHaaMiPLLh8q1_hR4Hm0ngdOvKjR_pc12D3EwDBaykP85F4atq5Plv58c5U09sJB8W4qWBnOQ8m8Ovo9l1aGUkPiuEAug_zDokGDvypCxeHsw"/>
+</div>
+<div class="text-body-sm font-body-sm text-outline">
+                            Closed by <span class="text-on-surface-variant">A. Sulaiman</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-surface-container-low hover:bg-surface-container text-on-surface-variant py-2 px-4 rounded-lg text-label-sm font-label-sm transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                            Report
+                        </button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation / Pagination -->
+<div class="flex justify-between items-center py-4 text-body-sm font-body-sm text-on-surface-variant border-t border-outline-variant/30">
+<span>Showing 1 to 3 of 24 periods</span>
+<div class="flex gap-1">
+<button class="p-2 rounded-lg hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-primary-container text-on-primary-container font-label-sm text-label-sm flex items-center justify-center">1</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface transition-colors font-label-sm text-label-sm flex items-center justify-center">2</button>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-on-surface transition-colors font-label-sm text-label-sm flex items-center justify-center">3</button>
+<button class="p-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

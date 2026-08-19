@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Employee Management - Institution Payroll</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#84f5ee",
+                      "on-tertiary-fixed": "#40000d",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed-variant": "#00504d",
+                      "secondary-fixed": "#e1e0ff",
+                      "inverse-on-surface": "#edf2f0",
+                      "tertiary": "#bc0b3b",
+                      "outline": "#6d7a78",
+                      "tertiary-container": "#ff7583",
+                      "on-secondary-fixed": "#07006c",
+                      "on-surface-variant": "#3d4948",
+                      "surface-container": "#eaefed",
+                      "secondary-fixed-dim": "#c0c1ff",
+                      "secondary-container": "#6063ee",
+                      "background": "#f5faf9",
+                      "vibrant-indigo": "#6366f1",
+                      "surface-variant": "#dee4e2",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#2c3131",
+                      "on-surface": "#171d1c",
+                      "surface-container-highest": "#dee4e2",
+                      "surface": "#f5faf9",
+                      "primary-container": "#38b2ac",
+                      "on-secondary-container": "#fffbff",
+                      "on-primary-container": "#003f3d",
+                      "on-secondary-fixed-variant": "#2f2ebe",
+                      "on-primary": "#ffffff",
+                      "surface-container-high": "#e4e9e8",
+                      "secondary": "#4648d4",
+                      "inverse-primary": "#66d8d2",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f5faf9",
+                      "on-error": "#ffffff",
+                      "on-background": "#171d1c",
+                      "surface-dim": "#d6dbda",
+                      "outline-variant": "#bcc9c7",
+                      "primary-fixed-dim": "#66d8d2",
+                      "primary": "#006a66",
+                      "surface-tint": "#006a66",
+                      "tertiary-fixed": "#ffdadb",
+                      "on-tertiary-container": "#750020",
+                      "mint-gradient-start": "#38b2ac",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "electric-pink": "#f43f5e",
+                      "mint-gradient-end": "#2c7a7b",
+                      "on-tertiary-fixed-variant": "#92002a",
+                      "surface-container-low": "#eff5f3",
+                      "tertiary-fixed-dim": "#ffb2b7",
+                      "on-primary-fixed": "#00201e",
+                      "soft-teal": "#e6fffa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "12px": "12px"
+              },
+              "spacing": {
+                      "margin-desktop": "40px",
+                      "element-gap": "12px",
+                      "margin-mobile": "20px",
+                      "unit": "4px",
+                      "gutter-md": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "title-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "data-tabular": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "data-tabular": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "26px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              },
+              boxShadow: {
+                  'ambient': '0 10px 30px -5px rgba(56, 178, 172, 0.08), 0 4px 10px -3px rgba(56, 178, 172, 0.04)',
+                  'ambient-hover': '0 20px 40px -5px rgba(56, 178, 172, 0.12), 0 8px 20px -3px rgba(56, 178, 172, 0.06)',
+                  'nav': '0 4px 20px -2px rgba(0, 106, 102, 0.05)',
+                  'inner-soft': 'inset 0 2px 4px 0 rgba(0, 106, 102, 0.02)'
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-lowest'); 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant'); 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline'); 
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased overflow-hidden flex h-screen bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col w-64 h-screen bg-white dark:bg-surface-container-highest border-r border-outline-variant/50 dark:border-outline/50 shadow-nav z-50 overflow-y-auto shrink-0 fixed left-0 top-0 transition-transform duration-300 ease-in-out">
+<div class="p-6 pb-2">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-mint-gradient-start to-mint-gradient-end flex items-center justify-center text-on-primary shadow-sm shadow-primary/20 shrink-0">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="text-title-md font-title-md font-black text-primary tracking-tight">Payroll Admin</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant/80 uppercase">Gov Division</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-mint-gradient-start to-mint-gradient-end text-on-primary font-body-md font-semibold py-3 px-4 rounded-12px shadow-sm shadow-primary-container/40 hover:shadow-md hover:shadow-primary-container/50 hover:scale-[1.02] transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1)">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                New Payroll Run
+            </button>
+</div>
+<div class="flex-1 py-4 flex flex-col gap-1 px-2">
+<!-- Navigation Items -->
+ 
+        param($m) $m.Value -replace 'href="/stitch/payroll-periods.html"', 'href="/stitch/dashboard.html"'
+    
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-4 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02] group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">calendar_month</span>
+<span class="font-body-sm text-body-sm font-medium">Payroll Periods</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-4 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02] group" href="/stitch/excel-import.html">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">upload_file</span>
+<span class="font-body-sm text-body-sm font-medium">Excel Import</span>
+</a>
+<!-- Active State: Employees -->
+<a class="flex items-center gap-3 bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-xl py-3 px-4 mx-2 border-l-4 border-primary shadow-sm scale-95 transition-transform duration-150 cubic-bezier(0.34, 1.56, 0.64, 1)" href="/stitch/employees.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-body-sm text-body-sm font-semibold">Employees</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-4 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02] group" href="/stitch/reports.html">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">assessment</span>
+<span class="font-body-sm text-body-sm font-medium">Reports</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-4 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02] group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">history</span>
+<span class="font-body-sm text-body-sm font-medium">Audit Log</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-4 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02] group" href="/stitch/settings.html">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="font-body-sm text-body-sm font-medium">Settings</span>
+</a>
+</div>
+<div class="mt-auto p-4 border-t border-outline-variant/30 flex flex-col gap-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-2 px-4 hover:bg-surface-container-low rounded-xl transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined text-[20px] group-hover:text-primary">help</span>
+<span class="font-label-sm text-label-sm font-medium">Help Center</span>
+</a>
+<a class="flex items-center gap-3 text-error py-2 px-4 hover:bg-error-container rounded-xl transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-label-sm text-label-sm font-medium">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden bg-background relative z-0">
+<!-- TopNavBar (Mobile only for full nav, mostly actions on desktop) -->
+<header class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 z-40 bg-surface/90 dark:bg-surface-container-highest/90 backdrop-blur-md shrink-0 border-b border-outline-variant/30 dark:border-outline/30 sticky top-0 shadow-sm shadow-primary/5">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="text-title-md font-title-md font-bold text-primary dark:text-inverse-primary hidden md:block">Institution Payroll</h2>
+</div>
+<!-- Search Bar -->
+<div class="flex-1 max-w-md mx-4 hidden md:flex items-center">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant/50 rounded-full py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-transparent transition-all shadow-inner-soft placeholder:text-outline/70" placeholder="Search employees, ID..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2 md:gap-4">
+<button class="text-on-surface-variant hover:text-primary p-2 rounded-full hover:bg-surface-container-low transition-all duration-300 hover:scale-[1.02]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary p-2 rounded-full hover:bg-surface-container-low transition-all duration-300 hover:scale-[1.02] hidden sm:block">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary p-2 rounded-full hover:bg-surface-container-low transition-all duration-300 hover:scale-[1.02] hidden sm:block">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-px bg-outline-variant/30 mx-1 hidden sm:block"></div>
+<button class="flex items-center gap-2 hover:bg-surface-container-low p-1 pr-3 rounded-full transition-all border border-transparent hover:border-outline-variant/30">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant/30" data-alt="A professional headshot of a young male admin officer named Aziz Sulaiman in a bright, modern office setting. High key lighting, clean crisp aesthetic, corporate but friendly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6heM8j_254P6UtIsYhB7DJ84zqLD9gPLBNZaMpd7ppBv_1Md3YNRZsvI06dsgmpwa_rgA3K-W9Ag81tvjP-TwnwuCNZvWLSz6qoxitAmde3gsBFNa3474r6w2c46nCu-zTywDyF2MApnjA61m6rAas7zWRrDK7RVRQn6pN3IVvY3sAu8kQVkDWHTxrHgM7PkbODDal3ijN24j2iUAZMGOZfq-gzzd2Y4N0DQq0qlFBN9hvZecjy68dA"/>
+<span class="font-body-sm text-body-sm font-medium hidden lg:block text-on-surface">Aziz S.</span>
+<span class="material-symbols-outlined text-[16px] text-outline hidden lg:block">expand_more</span>
+</button>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-background/50">
+<div class="max-w-[1400px] mx-auto flex flex-col gap-6">
+<!-- Page Header & Actions -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-2">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-background mb-1">Employees</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Manage your workforce, view details, and track payroll status.</p>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-surface-container-lowest text-vibrant-indigo border-[1.5px] border-vibrant-indigo/20 hover:border-vibrant-indigo font-body-sm font-semibold py-2.5 px-4 rounded-12px shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1)">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Export
+                        </button>
+<button class="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-mint-gradient-start to-mint-gradient-end text-on-primary font-body-sm font-semibold py-2.5 px-4 rounded-12px shadow-sm shadow-primary-container/40 hover:shadow-md hover:shadow-primary-container/50 hover:scale-[1.02] transition-all duration-300 cubic-bezier(0.34, 1.56, 0.64, 1)">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+                            Add Employee
+                        </button>
+</div>
+</div>
+<!-- Filters & Search Bar (Mobile/Tablet focus) -->
+<div class="bg-surface-container-lowest rounded-12px shadow-ambient p-4 flex flex-col lg:flex-row gap-4 items-center border border-surface-container-low z-10">
+<div class="relative w-full lg:max-w-xs md:hidden">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+<input class="w-full bg-surface border-none rounded-12px py-2.5 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container transition-all shadow-inner-soft" placeholder="Search employees..." type="text"/>
+</div>
+<div class="flex flex-wrap w-full lg:w-auto gap-3 items-center">
+<span class="text-label-sm font-label-sm text-outline uppercase tracking-wider mr-1 hidden sm:block">Filters:</span>
+<!-- Filter Dropdown 1 -->
+<div class="relative inline-block w-full sm:w-auto">
+<select class="appearance-none w-full sm:w-40 bg-surface-container-low border border-outline-variant/30 text-on-surface-variant text-body-sm rounded-12px py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 cursor-pointer shadow-sm">
+<option>All Departments</option>
+<option>Engineering</option>
+<option>Marketing</option>
+<option>Human Resources</option>
+<option>Finance</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Filter Dropdown 2 -->
+<div class="relative inline-block w-full sm:w-auto">
+<select class="appearance-none w-full sm:w-40 bg-surface-container-low border border-outline-variant/30 text-on-surface-variant text-body-sm rounded-12px py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 cursor-pointer shadow-sm">
+<option>All Types</option>
+<option>Full-Time</option>
+<option>Part-Time</option>
+<option>Contractor</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Filter Dropdown 3 -->
+<div class="relative inline-block w-full sm:w-auto">
+<select class="appearance-none w-full sm:w-40 bg-surface-container-low border border-outline-variant/30 text-on-surface-variant text-body-sm rounded-12px py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 cursor-pointer shadow-sm">
+<option>All Statuses</option>
+<option>Active</option>
+<option>On Leave</option>
+<option>Terminated</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-outline">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<div class="ml-auto hidden lg:flex items-center gap-2 text-label-sm font-label-sm text-outline">
+<span>Showing 1-10 of 124</span>
+</div>
+</div>
+<!-- Employee Data Grid (Bento/Card-like approach for table rows) -->
+<div class="bg-surface-container-lowest rounded-[20px] shadow-ambient border border-surface-container overflow-hidden">
+<!-- Table Header (Hidden on small screens, visual grid on desktop) -->
+<div class="hidden md:grid grid-cols-12 gap-4 p-4 border-b border-surface-variant bg-surface-container-lowest/50 backdrop-blur-sm sticky top-0 z-10 items-center">
+<div class="col-span-4 text-label-sm font-label-sm text-outline uppercase tracking-wider pl-2">Employee</div>
+<div class="col-span-2 text-label-sm font-label-sm text-outline uppercase tracking-wider">ID &amp; Type</div>
+<div class="col-span-2 text-label-sm font-label-sm text-outline uppercase tracking-wider">Department</div>
+<div class="col-span-2 text-label-sm font-label-sm text-outline uppercase tracking-wider">Base Salary</div>
+<div class="col-span-1 text-label-sm font-label-sm text-outline uppercase tracking-wider">Status</div>
+<div class="col-span-1 text-label-sm font-label-sm text-outline uppercase tracking-wider text-right pr-2">Actions</div>
+</div>
+<!-- List Container -->
+<div class="flex flex-col divide-y divide-surface-variant/50">
+<!-- Employee Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-container-low transition-colors duration-200 group relative">
+<!-- Mobile label overlay (visually hidden on md) -->
+<div class="col-span-4 flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-transparent group-hover:ring-primary/20 transition-all" data-alt="Professional headshot of a middle-aged female engineering manager named Sarah Jenkins in a bright modern tech office. High key lighting, friendly expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiapyDx2gdHcv40Ba2U5ZA4TJ7xRyfbszB9RZWcOXM3BPUhSja0q90LmNbeD9xaxYy0hbsMmVYYK3FqIm-4PJa4wf4Ku-E-JsyrfWpjcAjmJ8-sb2Eilj_bvurJAV1bRE483OuhR36P1vuwKNg7L289EXrX_Ro1v5J8X5zcgMbJMBP8cQ5Ymm3mGIbLDZLFa8HdDZELETeV0e8i4y0ljzaxhCimrgBfbYCa69UufJpMu6xhP_XIrJ-Tg"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Sarah Jenkins</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant md:hidden">EMP-1024 • Full-Time</div>
+</div>
+</div>
+<div class="col-span-2 hidden md:flex flex-col">
+<span class="font-data-tabular text-data-tabular text-on-surface">EMP-1024</span>
+<span class="font-label-sm text-label-sm text-outline uppercase">Full-Time</span>
+</div>
+<div class="col-span-2 flex items-center md:items-start gap-2 md:flex-col">
+<span class="md:hidden text-label-sm text-outline w-24">Department:</span>
+<span class="font-body-sm text-body-sm text-on-surface bg-surface-container-high px-2 py-0.5 rounded-md border border-outline-variant/30">Engineering</span>
+</div>
+<div class="col-span-2 flex items-center md:items-start gap-2 md:flex-col">
+<span class="md:hidden text-label-sm text-outline w-24">Base Salary:</span>
+<span class="font-data-tabular text-data-tabular font-medium text-on-surface">$125,000<span class="text-outline/70 font-normal text-xs">/yr</span></span>
+</div>
+<div class="col-span-1 flex items-center gap-2">
+<span class="md:hidden text-label-sm text-outline w-24">Status:</span>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-container/20 text-on-primary-container border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                    Active
+                                </span>
+</div>
+<div class="col-span-1 flex items-center justify-end gap-2 md:pr-2 absolute md:relative right-4 top-4 md:right-0 md:top-0">
+<button class="p-1.5 text-outline hover:text-vibrant-indigo hover:bg-vibrant-indigo/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Payroll History">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</button>
+</div>
+</div>
+<!-- Employee Row 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-container-low transition-colors duration-200 group relative">
+<div class="col-span-4 flex items-center gap-4">
+<div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-secondary-container text-on-secondary shadow-sm ring-2 ring-transparent group-hover:ring-secondary/20 transition-all">
+<span class="font-title-md font-bold text-sm">MC</span>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-primary rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Marcus Chen</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant md:hidden">EMP-1088 • Contractor</div>
+</div>
+</div>
+<div class="col-span-2 hidden md:flex flex-col">
+<span class="font-data-tabular text-data-tabular text-on-surface">EMP-1088</span>
+<span class="font-label-sm text-label-sm text-outline uppercase">Contractor</span>
+</div>
+<div class="col-span-2 flex items-center md:items-start gap-2 md:flex-col">
+<span class="md:hidden text-label-sm text-outline w-24">Department:</span>
+<span class="font-body-sm text-body-sm text-on-surface bg-surface-container-high px-2 py-0.5 rounded-md border border-outline-variant/30">Design</span>
+</div>
+<div class="col-span-2 flex items-center md:items-start gap-2 md:flex-col">
+<span class="md:hidden text-label-sm text-outline w-24">Base Salary:</span>
+<span class="font-data-tabular text-data-tabular font-medium text-on-surface">$85,000<span class="text-outline/70 font-normal text-xs">/yr</span></span>
+</div>
+<div class="col-span-1 flex items-center gap-2">
+<span class="md:hidden text-label-sm text-outline w-24">Status:</span>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-container/20 text-on-primary-container border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                    Active
+                                </span>
+</div>
+<div class="col-span-1 flex items-center justify-end gap-2 md:pr-2 absolute md:relative right-4 top-4 md:right-0 md:top-0">
+<button class="p-1.5 text-outline hover:text-vibrant-indigo hover:bg-vibrant-indigo/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Payroll History">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</button>
+</div>
+</div>
+<!-- Employee Row 3 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-container-low transition-colors duration-200 group relative opacity-80">
+<div class="col-span-4 flex items-center gap-4">
+<div class="relative">
+<img class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-transparent transition-all grayscale opacity-80" data-alt="Professional headshot of a young woman named Elena Rodriguez in a bright office, soft lighting, wearing smart casual attire." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXjwMl2FMvhAgQj5LQ7fxvFfx5Kk6siaFUXD90um8Gu9ZfF3psuRVliTb1cU0QbVfoAXxI4Xw22DkMSF1fKhUrNNKzZlC4cx894Nj1NlnVR3rNpwIUeXWiqZ5aCmYOb5d1TFpIRcI7GYey7hRQRia7hi0sfwf_LudqcqV2y0ftRMKhZMCP7fJ_MkOlDJzI9SyONXibohLvjribw6EqWEiLgQ5M1mgeAitaozXhjccVPF5DDXtm_hBV4w"/>
+<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-outline-variant rounded-full border-2 border-surface-container-lowest"></div>
+</div>
+<div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Elena Rodriguez</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant md:hidden">EMP-0942 • Full-Time</div>
+</div>
+</div>
+<div class="col-span-2 hidden md:flex flex-col">
+<span class="font-data-tabular text-data-tabular text-on-surface">EMP-0942</span>
+<span class="font-label-sm text-label-sm text-outline uppercase">Full-Time</span>
+</div>
+<div class="col-span-2 flex items-center md:items-start gap-2 md:flex-col">
+<span class="md:hidden text-label-sm text-outline w-24">Department:</span>
+<span class="font-body-sm text-body-sm text-on-surface bg-surface-container-high px-2 py-0.5 rounded-md border border-outline-variant/30">Marketing</span>
+</div>
+<div class="col-span-2 flex items-center md:items-start gap-2 md:flex-col">
+<span class="md:hidden text-label-sm text-outline w-24">Base Salary:</span>
+<span class="font-data-tabular text-data-tabular font-medium text-on-surface">$92,500<span class="text-outline/70 font-normal text-xs">/yr</span></span>
+</div>
+<div class="col-span-1 flex items-center gap-2">
+<span class="md:hidden text-label-sm text-outline w-24">Status:</span>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-surface-container-highest text-on-surface-variant border border-outline-variant/50">
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+                                    On Leave
+                                </span>
+</div>
+<div class="col-span-1 flex items-center justify-end gap-2 md:pr-2 absolute md:relative right-4 top-4 md:right-0 md:top-0">
+<button class="p-1.5 text-outline hover:text-vibrant-indigo hover:bg-vibrant-indigo/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Payroll History">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Pagination Footer -->
+<div class="p-4 border-t border-surface-variant bg-surface-container-lowest flex items-center justify-between">
+<button class="px-4 py-2 text-body-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-lg transition-colors border border-outline-variant/30 hover:border-primary/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                            Previous
+                        </button>
+<div class="hidden sm:flex gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary font-medium text-sm shadow-sm shadow-primary/20">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high font-medium text-sm transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high font-medium text-sm transition-colors">3</button>
+<span class="w-8 h-8 flex items-center justify-center text-outline">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container-high font-medium text-sm transition-colors">13</button>
+</div>
+<button class="px-4 py-2 text-body-sm font-medium text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-lg transition-colors border border-outline-variant/30 hover:border-primary/30 flex items-center gap-1">
+                            Next
+                            <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

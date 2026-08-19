@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Settings - Payroll Admin</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#84f5ee",
+                        "on-tertiary-fixed": "#40000d",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#00504d",
+                        "secondary-fixed": "#e1e0ff",
+                        "inverse-on-surface": "#edf2f0",
+                        "tertiary": "#bc0b3b",
+                        "outline": "#6d7a78",
+                        "tertiary-container": "#ff7583",
+                        "on-secondary-fixed": "#07006c",
+                        "on-surface-variant": "#3d4948",
+                        "surface-container": "#eaefed",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "secondary-container": "#6063ee",
+                        "background": "#f5faf9",
+                        "vibrant-indigo": "#6366f1",
+                        "surface-variant": "#dee4e2",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2c3131",
+                        "on-surface": "#171d1c",
+                        "surface-container-highest": "#dee4e2",
+                        "surface": "#f5faf9",
+                        "primary-container": "#38b2ac",
+                        "on-secondary-container": "#fffbff",
+                        "on-primary-container": "#003f3d",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e4e9e8",
+                        "secondary": "#4648d4",
+                        "inverse-primary": "#66d8d2",
+                        "on-error-container": "#93000a",
+                        "surface-bright": "#f5faf9",
+                        "on-error": "#ffffff",
+                        "on-background": "#171d1c",
+                        "surface-dim": "#d6dbda",
+                        "outline-variant": "#bcc9c7",
+                        "primary-fixed-dim": "#66d8d2",
+                        "primary": "#006a66",
+                        "surface-tint": "#006a66",
+                        "tertiary-fixed": "#ffdadb",
+                        "on-tertiary-container": "#750020",
+                        "mint-gradient-start": "#38b2ac",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "electric-pink": "#f43f5e",
+                        "mint-gradient-end": "#2c7a7b",
+                        "on-tertiary-fixed-variant": "#92002a",
+                        "surface-container-low": "#eff5f3",
+                        "tertiary-fixed-dim": "#ffb2b7",
+                        "on-primary-fixed": "#00201e",
+                        "soft-teal": "#e6fffa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "element-gap": "12px",
+                        "margin-mobile": "20px",
+                        "unit": "4px",
+                        "gutter-md": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-sm": ["JetBrains Mono"],
+                        "title-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "data-tabular": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "800" }],
+                        "data-tabular": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["26px", { "lineHeight": "32px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0 4px 6px -1px rgba(56, 178, 172, 0.05), 0 10px 15px -3px rgba(56, 178, 172, 0.1);
+        }
+        .ambient-shadow-primary {
+            box-shadow: 0 0 20px rgba(56, 178, 172, 0.15), 0 4px 6px rgba(0, 106, 102, 0.1);
+        }
+        
+        /* Toggle Switch Styling */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #38b2ac;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background: linear-gradient(to right, #38b2ac, #2c7a7b);
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #dee4e2;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .toggle-label {
+            width: 48px;
+            height: 24px;
+            background-color: #dee4e2;
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .toggle-dot {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .toggle-checkbox:checked ~ .toggle-dot {
+            transform: translateX(24px);
+        }
+        
+        /* Input Focus Glow */
+        .input-glow:focus-within {
+            box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.2);
+            border-color: #38b2ac;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-white dark:bg-surface-container-highest text-primary dark:text-primary-fixed docked h-screen w-64 left-0 border-r border-outline-variant/50 dark:border-outline/50 shadow-xl shadow-primary/5 fixed top-0 flex-col z-50 overflow-y-auto">
+<div class="p-6 border-b border-outline-variant/30 flex items-center gap-4">
+<div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container font-title-md font-bold">
+                IL
+            </div>
+<div>
+<h1 class="text-title-md font-title-md font-black text-primary">Payroll Admin</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Gov Division</p>
+</div>
+</div>
+<div class="p-4">
+<button class="w-full py-3 px-4 bg-gradient-to-r from-mint-gradient-start to-mint-gradient-end text-on-primary rounded-xl font-label-sm text-label-sm flex items-center justify-center gap-2 ambient-shadow-primary hover:scale-[1.02] transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+                New Payroll Run
+            </button>
+</div>
+<ul class="flex-1 py-2 space-y-1">
+<li>
+ 
+        param($m) $m.Value -replace 'href="#"', 'href="/stitch/dashboard.html"'
+    
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02]" href="/stitch/payroll-periods.html">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-label-sm font-label-sm">Payroll Periods</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02]" href="/stitch/excel-import.html">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="text-label-sm font-label-sm">Excel Import</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02]" href="/stitch/employees.html">
+<span class="material-symbols-outlined">groups</span>
+<span class="text-label-sm font-label-sm">Employees</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02]" href="/stitch/reports.html">
+<span class="material-symbols-outlined">assessment</span>
+<span class="text-label-sm font-label-sm">Reports</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high dark:hover:bg-on-tertiary-fixed-variant transition-all duration-300 hover:scale-[1.02]" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="text-label-sm font-label-sm">Audit Log</span>
+</a>
+</li>
+<li>
+<!-- ACTIVE STATE -->
+<a class="flex items-center gap-3 bg-primary-container dark:bg-on-primary-fixed-variant text-on-primary-container dark:text-primary-fixed rounded-xl py-3 px-6 mx-2 border-l-4 border-primary shadow-sm hover:scale-[1.02] transition-transform duration-150 cubic-bezier(0.34, 1.56, 0.64, 1)" href="/stitch/settings.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="text-label-sm font-label-sm">Settings</span>
+</a>
+</li>
+</ul>
+<div class="p-4 border-t border-outline-variant/30 space-y-1">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="text-label-sm font-label-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-surface-variant py-3 px-6 mx-2 hover:bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-all duration-300" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-label-sm font-label-sm">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col h-screen overflow-y-auto">
+<!-- TopNavBar (Mobile Only for Navigation context, Desktop for Actions/Context) -->
+<header class="bg-surface/90 dark:bg-surface-container-highest/90 backdrop-blur-md text-primary dark:text-primary-fixed docked full-width top-0 border-b border-outline-variant/30 dark:border-outline/30 shadow-sm shadow-primary/5 flex justify-between items-center w-full px-margin-desktop h-16 z-40 sticky top-0">
+<div class="flex items-center gap-4">
+<h2 class="text-title-md font-title-md font-bold text-primary dark:text-inverse-primary hidden md:block">Institution Payroll</h2>
+<!-- Mobile Menu Button -->
+<button class="md:hidden p-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="text-title-md font-title-md font-bold text-primary md:hidden">Settings</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant/50 input-glow transition-all">
+<span class="material-symbols-outlined text-outline mr-2 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm font-body-sm text-on-surface outline-none w-48" placeholder="Search settings..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all duration-300 hover:scale-[1.02]">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all duration-300 hover:scale-[1.02]">
+<span class="material-symbols-outlined">grid_view</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm cursor-pointer ml-2">
+                    AS
+                </div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-margin-mobile md:p-margin-desktop flex-1 max-w-7xl mx-auto w-full space-y-8 pb-20">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-surface mb-2">System Configuration</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Manage global settings, user access, and data structures.</p>
+</div>
+<button class="hidden md:flex px-6 py-2.5 bg-gradient-to-r from-mint-gradient-start to-mint-gradient-end text-on-primary rounded-xl font-label-sm text-label-sm items-center gap-2 ambient-shadow-primary hover:scale-[1.02] transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+                    Save Changes
+                </button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-md">
+<!-- General Settings (Spans 8 cols) -->
+<section class="lg:col-span-8 bg-surface-container-lowest rounded-[24px] p-6 soft-shadow border border-surface-container hover:shadow-lg transition-shadow duration-300">
+<div class="flex items-center gap-3 mb-6 border-b border-surface-variant pb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">tune</span>
+</div>
+<h2 class="text-title-md font-title-md text-on-surface">General Settings</h2>
+</div>
+<div class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant block">System Name</label>
+<div class="relative input-glow rounded-xl border border-outline-variant/50 bg-surface-bright overflow-hidden flex items-center transition-all">
+<input class="w-full bg-transparent border-none focus:ring-0 text-body-md font-body-md text-on-surface p-3 outline-none" type="text" value="Institution Payroll Prod"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant block">Default Currency</label>
+<div class="relative input-glow rounded-xl border border-outline-variant/50 bg-surface-bright overflow-hidden flex items-center transition-all">
+<select class="w-full bg-transparent border-none focus:ring-0 text-body-md font-body-md text-on-surface p-3 outline-none appearance-none">
+<option>USD ($)</option>
+<option>EUR (€)</option>
+<option>GBP (£)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-sm font-label-sm text-on-surface-variant block">Institution Logo</label>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-8 flex flex-col items-center justify-center bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300 mb-3">
+<span class="material-symbols-outlined text-2xl">cloud_upload</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface font-medium">Drag &amp; drop or click to upload</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant mt-1">SVG, PNG, JPG (max. 2MB)</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Toggles (Spans 4 cols) -->
+<section class="lg:col-span-4 bg-surface-container-lowest rounded-[24px] p-6 soft-shadow border border-surface-container hover:shadow-lg transition-shadow duration-300">
+<div class="flex items-center gap-3 mb-6 border-b border-surface-variant pb-4">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">toggle_on</span>
+</div>
+<h2 class="text-title-md font-title-md text-on-surface">Features</h2>
+</div>
+<div class="space-y-5">
+<div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container-low transition-colors">
+<div>
+<p class="text-data-tabular font-data-tabular text-on-surface">Auto-Sync Data</p>
+<p class="text-label-sm font-label-sm text-outline">Nightly hr database sync</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle1" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="toggle1"></label>
+<div class="toggle-dot"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container-low transition-colors">
+<div>
+<p class="text-data-tabular font-data-tabular text-on-surface">Strict Audit Mode</p>
+<p class="text-label-sm font-label-sm text-outline">Require notes for changes</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle2" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="toggle2"></label>
+<div class="toggle-dot"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl hover:bg-surface-container-low transition-colors">
+<div>
+<p class="text-data-tabular font-data-tabular text-on-surface">Email Notifications</p>
+<p class="text-label-sm font-label-sm text-outline">Send alerts to admins</p>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" id="toggle3" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer" for="toggle3"></label>
+<div class="toggle-dot"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Dynamic Fields Configuration (Spans 12 cols) -->
+<section class="lg:col-span-12 bg-surface-container-lowest rounded-[24px] p-6 soft-shadow border border-surface-container hover:shadow-lg transition-shadow duration-300">
+<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-surface-variant pb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-vibrant-indigo">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<div>
+<h2 class="text-title-md font-title-md text-on-surface">Dynamic Fields Mapping</h2>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Configure custom data columns for excel imports.</p>
+</div>
+</div>
+<button class="px-4 py-2 border-2 border-vibrant-indigo text-vibrant-indigo rounded-xl font-label-sm text-label-sm flex items-center gap-2 hover:bg-vibrant-indigo/5 transition-colors duration-300">
+<span class="material-symbols-outlined text-sm">add</span>
+                            Add Field
+                        </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Field Card 1 -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/30 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm cursor-grab">drag_indicator</span>
+<span class="text-data-tabular font-data-tabular text-on-surface font-medium">Employee ID</span>
+</div>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="text-label-sm font-label-sm text-on-surface-variant">Data Type</div>
+<select class="w-full bg-surface-bright border border-outline-variant/50 rounded-lg p-2 text-body-sm font-body-sm outline-none focus:border-primary">
+<option>Alphanumeric</option>
+<option>Numeric</option>
+<option>Date</option>
+</select>
+</div>
+</div>
+<!-- Field Card 2 -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/30 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm cursor-grab">drag_indicator</span>
+<div class="flex items-center gap-2 input-glow rounded px-1 -ml-1 border border-transparent">
+<input class="bg-transparent border-none p-0 text-data-tabular font-data-tabular text-on-surface font-medium w-24 outline-none focus:ring-0" type="text" value="Base Salary"/>
+<span class="material-symbols-outlined text-outline text-[12px] opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+</div>
+</div>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="text-label-sm font-label-sm text-on-surface-variant">Data Type</div>
+<select class="w-full bg-surface-bright border border-outline-variant/50 rounded-lg p-2 text-body-sm font-body-sm outline-none focus:border-primary">
+<option>Currency</option>
+<option>Numeric</option>
+<option>Alphanumeric</option>
+</select>
+</div>
+</div>
+<!-- Field Card 3 -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/30 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-sm cursor-grab">drag_indicator</span>
+<div class="flex items-center gap-2 input-glow rounded px-1 -ml-1 border border-transparent">
+<input class="bg-transparent border-none p-0 text-data-tabular font-data-tabular text-on-surface font-medium w-32 outline-none focus:ring-0" type="text" value="Department Code"/>
+<span class="material-symbols-outlined text-outline text-[12px] opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+</div>
+</div>
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="text-label-sm font-label-sm text-on-surface-variant">Data Type</div>
+<select class="w-full bg-surface-bright border border-outline-variant/50 rounded-lg p-2 text-body-sm font-body-sm outline-none focus:border-primary">
+<option>Alphanumeric</option>
+<option>Category</option>
+</select>
+</div>
+</div>
+</div>
+</section>
+<!-- User Management (Spans 12 cols) -->
+<section class="lg:col-span-12 bg-surface-container-lowest rounded-[24px] p-6 soft-shadow border border-surface-container hover:shadow-lg transition-shadow duration-300">
+<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-surface-variant pb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">manage_accounts</span>
+</div>
+<h2 class="text-title-md font-title-md text-on-surface">Admin Access</h2>
+</div>
+<button class="px-4 py-2 border-2 border-secondary text-secondary rounded-xl font-label-sm text-label-sm flex items-center gap-2 hover:bg-secondary/5 transition-colors duration-300">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                            Invite User
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/30 text-label-sm font-label-sm text-on-surface-variant">
+<th class="py-3 px-4 font-semibold">User</th>
+<th class="py-3 px-4 font-semibold">Role</th>
+<th class="py-3 px-4 font-semibold">Status</th>
+<th class="py-3 px-4 font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="text-body-sm font-body-sm text-on-surface">
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">AS</div>
+<div>
+<p class="font-medium">Aziz Sulaiman</p>
+<p class="text-label-sm text-outline">aziz@institution.gov</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">Super Admin</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] font-semibold bg-soft-teal text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-outline hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/50 transition-colors">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center font-bold text-xs">SJ</div>
+<div>
+<p class="font-medium">Sarah Jenkins</p>
+<p class="text-label-sm text-outline">s.jenkins@institution.gov</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4">Editor</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] font-semibold bg-surface-variant text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                            Offline
+                                        </span>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-outline hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Mobile floating save button -->
+<div class="md:hidden fixed bottom-6 right-6 z-50">
+<button class="w-14 h-14 bg-gradient-to-br from-mint-gradient-start to-mint-gradient-end text-on-primary rounded-full flex items-center justify-center ambient-shadow-primary hover:scale-105 transition-all duration-300">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

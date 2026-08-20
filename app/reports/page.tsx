@@ -19,7 +19,42 @@ function ReportsContent() {
   const [foreignFilter, setForeignFilter] = useState('');
   const [page, setPage] = useState(1);
   const [selectedVoucher, setSelectedVoucher] = useState<Employee | null>(null);
-  const itemsPerPage = 8;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  type SortField =
+    | 'id'
+    | 'name'
+    | 'isForeign'
+    | 'baseSalary'
+    | 'netSalary'
+    | 'salaryState'
+    | 'paidAt';
+
+  type SortOrder = 'asc' | 'desc';
+
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [pageSizeMode, setPageSizeMode] = useState<'5' | '10' | '20' | '50' | '100' | 'all' | 'custom'>('10');
+  const [customPageSize, setCustomPageSize] = useState<number>(25);
+  const [isCustomInputOpen, setIsCustomInputOpen] = useState(false);
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+      } else {
+        setSortField(null);
+        setSortOrder('asc');
+      }
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
 
   // Sync department filter from URL query parameter
   useEffect(() => {
@@ -51,8 +86,54 @@ function ReportsContent() {
     return matchesSearch && matchesDept && matchesState && matchesForeign;
   });
 
-  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage) || 1;
-  const paginatedEmployees = filteredEmployees.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  // Dynamic Type-Aware Sorting (Numerical, Alphabetical, Date, State)
+  const sortedEmployees = [...filteredEmployees].sort((a, b) => {
+    if (!sortField) return 0;
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+
+    switch (sortField) {
+      case 'id':
+        return multiplier * a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+      case 'name':
+        return multiplier * a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+      case 'isForeign':
+        return multiplier * (Number(Boolean(a.isForeign)) - Number(Boolean(b.isForeign)));
+      case 'baseSalary': {
+        const aVal = a.isForeign ? a.baseSalary * usdRate : a.baseSalary;
+        const bVal = b.isForeign ? b.baseSalary * usdRate : b.baseSalary;
+        return multiplier * (aVal - bVal);
+      }
+      case 'netSalary': {
+        const aVal = a.isForeign ? a.netSalary * usdRate : a.netSalary;
+        const bVal = b.isForeign ? b.netSalary * usdRate : b.netSalary;
+        return multiplier * (aVal - bVal);
+      }
+      case 'salaryState':
+        return multiplier * (a.salaryState || '').localeCompare(b.salaryState || '');
+      case 'paidAt': {
+        const aTime = a.paidAt ? new Date(a.paidAt).getTime() : 0;
+        const bTime = b.paidAt ? new Date(b.paidAt).getTime() : 0;
+        if (!isNaN(aTime) && !isNaN(bTime) && (aTime > 0 || bTime > 0)) {
+          return multiplier * (aTime - bTime);
+        }
+        return multiplier * (a.paidAt || '').localeCompare(b.paidAt || '');
+      }
+      default:
+        return 0;
+    }
+  });
+
+  const effectiveItemsPerPage =
+    pageSizeMode === 'all'
+      ? Math.max(1, sortedEmployees.length)
+      : pageSizeMode === 'custom'
+        ? Math.max(1, customPageSize || 10)
+        : parseInt(pageSizeMode, 10) || 10;
+
+  const totalPages = Math.ceil(sortedEmployees.length / effectiveItemsPerPage) || 1;
+  const startIndex = (page - 1) * effectiveItemsPerPage;
+  const endIndex = Math.min(sortedEmployees.length, startIndex + effectiveItemsPerPage);
+  const paginatedEmployees = sortedEmployees.slice(startIndex, startIndex + effectiveItemsPerPage);
 
   // Status-based breakdown groups
   const paidEmployees = filteredEmployees.filter((e) => e.salaryState === 'Paid');
@@ -674,24 +755,43 @@ function ReportsContent() {
                   <option value="Operations">Operations</option>
                 </select>
 
-                {(search || stateFilter || deptFilter || foreignFilter) && (
+                {(search || stateFilter || deptFilter || foreignFilter || sortField) && (
                   <button
                     onClick={() => {
                       setSearch('');
                       setStateFilter('');
                       setDeptFilter('');
                       setForeignFilter('');
+                      setSortField(null);
+                      setSortOrder('asc');
                       setPage(1);
                     }}
-                    className="text-xs text-primary font-bold hover:underline px-2 cursor-pointer"
+                    className="text-xs text-primary font-bold hover:underline px-2 cursor-pointer flex items-center gap-1"
+                    title="Clear search, filters, and active sort order"
                   >
+                    <span className="material-symbols-outlined text-[13px]">restart_alt</span>
                     Reset
                   </button>
                 )}
               </div>
 
-              <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 font-mono shrink-0">
-                <span>{paginatedEmployees.length} of {filteredEmployees.length} records</span>
+              <div className="hidden lg:flex items-center gap-2 text-xs text-slate-400 font-mono shrink-0">
+                {sortField && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold text-[11px] border border-primary/20">
+                    <span className="material-symbols-outlined text-[13px]">
+                      {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                    </span>
+                    Sorted: {sortField} ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+                    <button
+                      onClick={() => setSortField(null)}
+                      className="ml-0.5 hover:text-slate-900"
+                      title="Clear sort"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                <span>{paginatedEmployees.length} of {sortedEmployees.length} records</span>
               </div>
             </div>
 
@@ -703,17 +803,133 @@ function ReportsContent() {
                 <table className="w-full text-left border-collapse text-xs print:text-[10px]">
                   <thead>
                     <tr className="bg-slate-50/90 border-b border-slate-200 print:border-slate-400 print:bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider print:text-[9px]">
-                      <th className="py-3 px-3 text-center w-[85px] print:py-2 print:px-2">ID</th>
-                      <th className="py-3 px-4 text-left min-w-[180px] print:py-2 print:px-2">Employee Name</th>
-                      <th className="py-3 px-3 text-center w-[110px] print:py-2 print:px-2">Workforce</th>
-                      <th className="py-3 px-4 text-center min-w-[150px] bg-slate-100/50 print:bg-transparent text-slate-900 print:py-2 print:px-2">
-                        <span>Base Salary</span>
+                      {/* ID */}
+                      <th
+                        onClick={() => handleSort('id')}
+                        className={`py-3 px-3 text-center w-[85px] print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'id' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by ID (Ascending / Descending)"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>ID</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'id' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'id' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
                       </th>
-                      <th className="py-3 px-4 text-center bg-slate-100/70 print:bg-transparent min-w-[200px] print:py-2 print:px-2">
-                        The Net Salary (Payout)
+
+                      {/* EMPLOYEE NAME */}
+                      <th
+                        onClick={() => handleSort('name')}
+                        className={`py-3 px-4 text-left min-w-[180px] print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'name' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort alphabetically by Name (A-Z / Z-A)"
+                      >
+                        <div className="inline-flex items-center justify-start gap-1">
+                          <span>Employee Name</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'name' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'name' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
                       </th>
-                      <th className="py-3 px-3 text-center w-[90px] print:py-2 print:px-2">State</th>
-                      <th className="py-3 px-4 text-center min-w-[140px] print:py-2 print:px-2">Disbursed At</th>
+
+                      {/* WORKFORCE */}
+                      <th
+                        onClick={() => handleSort('isForeign')}
+                        className={`py-3 px-3 text-center w-[110px] print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'isForeign' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by Workforce Type (Foreign USD vs Local Dinar)"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Workforce</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'isForeign' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'isForeign' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* BASE SALARY */}
+                      <th
+                        onClick={() => handleSort('baseSalary')}
+                        className={`py-3 px-4 text-center min-w-[150px] bg-slate-100/50 print:bg-transparent text-slate-900 print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-200/60 ${
+                          sortField === 'baseSalary' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Base Salary"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Base Salary</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'baseSalary' ? 'text-primary font-black' : 'text-slate-400'
+                          }`}>
+                            {sortField === 'baseSalary' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* THE NET SALARY (PAYOUT) */}
+                      <th
+                        onClick={() => handleSort('netSalary')}
+                        className={`py-3 px-4 text-center bg-slate-100/70 print:bg-transparent min-w-[200px] print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-200/80 ${
+                          sortField === 'netSalary' ? 'bg-primary/10 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Net Salary Payout"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span className="font-black">The Net Salary (Payout)</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'netSalary' ? 'text-primary font-black' : 'text-slate-400'
+                          }`}>
+                            {sortField === 'netSalary' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* STATE */}
+                      <th
+                        onClick={() => handleSort('salaryState')}
+                        className={`py-3 px-3 text-center w-[90px] print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'salaryState' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by State (Paid / Not Yet / Stopped)"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>State</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'salaryState' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'salaryState' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* DISBURSED AT */}
+                      <th
+                        onClick={() => handleSort('paidAt')}
+                        className={`py-3 px-4 text-center min-w-[140px] print:py-2 print:px-2 select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'paidAt' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort chronologically by Disbursed Date & Time"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Disbursed At</span>
+                          <span className={`material-symbols-outlined text-[14px] print:hidden no-print ${
+                            sortField === 'paidAt' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'paidAt' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* VOUCHER */}
                       <th className="py-3 px-4 text-center min-w-[130px] print:hidden no-print">Voucher</th>
                     </tr>
                   </thead>
@@ -929,41 +1145,187 @@ function ReportsContent() {
                 </table>
               </div>
 
-              {/* Screen-only Pagination */}
-              <div className="bg-slate-50 px-4 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs print:hidden no-print">
-                <p className="text-slate-500 font-mono">
-                  Showing <span className="font-bold text-slate-800">{paginatedEmployees.length}</span> of{' '}
-                  <span className="font-bold text-slate-800">{filteredEmployees.length}</span> staff records
-                </p>
+              {/* Table Pagination & Page-Size Controls Footer */}
+              <div className="p-4 border-t border-slate-200 bg-white flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono print:hidden no-print">
+                {/* Left: Records Per Page Selector (5, 10, 20, 50, 100, All, Custom) */}
+                {(() => {
+                  const hasData = filteredEmployees.length > 0;
+                  return (
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[11px] uppercase tracking-wider select-none">
+                        <span className="material-symbols-outlined text-[16px] text-slate-400">tune</span>
+                        <span>Show:</span>
+                      </div>
 
-                <div className="flex items-center gap-1">
+                      <div className={`flex items-center p-1 rounded-2xl border transition-all ${
+                        hasData
+                          ? 'bg-slate-100/90 border-slate-200/90 shadow-2xs gap-0.5'
+                          : 'bg-slate-50 border-slate-200/60 opacity-40 cursor-not-allowed pointer-events-none gap-0.5'
+                      }`}>
+                        {(['5', '10', '20', '50', '100', 'all'] as const).map((mode) => {
+                          const isActive = pageSizeMode === mode && !isCustomInputOpen;
+                          return (
+                            <button
+                              key={mode}
+                              type="button"
+                              disabled={!hasData}
+                              onClick={() => {
+                                if (!hasData) return;
+                                setPageSizeMode(mode);
+                                setIsCustomInputOpen(false);
+                                setPage(1);
+                              }}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 ${
+                                isActive
+                                  ? 'bg-primary text-white shadow-xs font-black scale-[1.02]'
+                                  : 'text-slate-600 hover:text-slate-950 hover:bg-white/90 cursor-pointer active:scale-95'
+                              } ${!hasData ? 'cursor-not-allowed opacity-50' : ''}`}
+                            >
+                              {mode === 'all' ? 'All' : mode}
+                            </button>
+                          );
+                        })}
+
+                        {/* Custom Option */}
+                        <button
+                          type="button"
+                          disabled={!hasData}
+                          onClick={() => {
+                            if (!hasData) return;
+                            setPageSizeMode('custom');
+                            setIsCustomInputOpen(true);
+                            setPage(1);
+                          }}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-150 ${
+                            (pageSizeMode === 'custom' || isCustomInputOpen) && hasData
+                              ? 'bg-primary text-white shadow-xs font-black scale-[1.02]'
+                              : 'text-slate-600 hover:text-slate-950 hover:bg-white/90 cursor-pointer active:scale-95'
+                          } ${!hasData ? 'cursor-not-allowed opacity-50' : ''}`}
+                        >
+                          Custom
+                        </button>
+                      </div>
+
+                      {/* Custom Input Field */}
+                      {hasData && (pageSizeMode === 'custom' || isCustomInputOpen) && (
+                        <div className="flex items-center gap-1.5 bg-white border-2 border-primary rounded-2xl px-3 py-1 shadow-xs ring-2 ring-primary/10 animate-fade-in">
+                          <span className="material-symbols-outlined text-[15px] text-primary">edit_attributes</span>
+                          <input
+                            type="number"
+                            min="1"
+                            max="5000"
+                            value={customPageSize}
+                            onChange={(e) => {
+                              const val = Math.max(1, parseInt(e.target.value) || 1);
+                              setCustomPageSize(val);
+                              setPageSizeMode('custom');
+                              setPage(1);
+                            }}
+                            className="w-12 text-center font-black text-xs outline-none text-primary"
+                            placeholder="Qty"
+                            autoFocus
+                          />
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">rows</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Center: Showing Range Summary */}
+                <div className="text-slate-500 text-xs">
+                  {filteredEmployees.length === 0 ? (
+                    <span className="text-slate-400 italic">No records available</span>
+                  ) : (
+                    <span>
+                      Showing <strong className="text-slate-900 font-bold">{startIndex + 1}</strong>–<strong className="text-slate-900 font-bold">{endIndex}</strong> of <strong className="text-slate-900 font-bold">{sortedEmployees.length}</strong> staff
+                    </span>
+                  )}
+                </div>
+
+                {/* Right: Page Navigation (Prev, Pages, Next) */}
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={page === 1}
-                    className="p-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    type="button"
+                    onClick={() => setPage(Math.max(1, page - 1))}
+                    disabled={!mounted || page <= 1 || filteredEmployees.length === 0}
+                    className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[16px]">chevron_left</span>
+                    Prev
                   </button>
 
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                    <button
-                      key={p}
-                      onClick={() => setPage(p)}
-                      className={`w-7 h-7 rounded-lg font-bold font-mono text-xs transition-all cursor-pointer ${
-                        page === p
-                          ? 'bg-primary text-white shadow-2xs'
-                          : 'text-slate-700 hover:bg-white border border-transparent hover:border-slate-200'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))}
+                  <div className="flex gap-1 items-center">
+                    {totalPages <= 7 ? (
+                      Array.from({ length: Math.max(1, totalPages) }, (_, i) => i + 1).map((p) => {
+                        const isCurrent = mounted && page === p && filteredEmployees.length > 0;
+                        return (
+                          <button
+                            key={p}
+                            type="button"
+                            disabled={filteredEmployees.length === 0}
+                            onClick={() => setPage(p)}
+                            className={`w-7 h-7 rounded-lg font-bold text-xs transition-all border ${
+                              isCurrent
+                                ? 'bg-primary text-white border-primary shadow-2xs cursor-default'
+                                : filteredEmployees.length === 0
+                                ? 'text-slate-300 bg-slate-50 border-slate-200 cursor-not-allowed'
+                                : 'text-slate-600 bg-white border-slate-200 hover:bg-slate-50 cursor-pointer'
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      (() => {
+                        const pages: (number | string)[] = [];
+                        if (page <= 4) {
+                          pages.push(1, 2, 3, 4, 5, '...', totalPages);
+                        } else if (page >= totalPages - 3) {
+                          pages.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+                        } else {
+                          pages.push(1, '...', page - 1, page, page + 1, '...', totalPages);
+                        }
+                        return pages.map((p, idx) => {
+                          if (p === '...') {
+                            return (
+                              <span key={`dots-${idx}`} className="px-1 text-slate-400 font-bold">
+                                ...
+                              </span>
+                            );
+                          }
+                          const pageNum = Number(p);
+                          const isCurrent = mounted && page === pageNum && filteredEmployees.length > 0;
+                          return (
+                            <button
+                              key={pageNum}
+                              type="button"
+                              disabled={filteredEmployees.length === 0}
+                              onClick={() => setPage(pageNum)}
+                              className={`w-7 h-7 rounded-lg font-bold text-xs transition-all border ${
+                                isCurrent
+                                  ? 'bg-primary text-white border-primary shadow-2xs cursor-default'
+                                  : filteredEmployees.length === 0
+                                  ? 'text-slate-300 bg-slate-50 border-slate-200 cursor-not-allowed'
+                                  : 'text-slate-600 bg-white border-slate-200 hover:bg-slate-50 cursor-pointer'
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        });
+                      })()
+                    )}
+                  </div>
 
                   <button
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="p-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                    type="button"
+                    onClick={() => setPage(Math.min(totalPages, page + 1))}
+                    disabled={!mounted || page >= totalPages || filteredEmployees.length === 0}
+                    className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all border border-slate-200 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
                   >
+                    Next
                     <span className="material-symbols-outlined text-[16px]">chevron_right</span>
                   </button>
                 </div>

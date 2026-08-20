@@ -15,6 +15,7 @@ export interface Employee {
   absenceDays: number;
   absenceDeduction: number;
   searchingDocFee?: number;
+  searchingDocFeeIqd?: number;
   isForeign?: boolean;
   currency?: 'USD' | 'Dinar';
   hasRecruitmentFee?: boolean;
@@ -581,8 +582,13 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
     
     // Scale < 1000 by 1000 for Dinar amounts, convert to USD for foreign
     const processAmount = (valInput: number | string): number => {
+      if (typeof valInput === 'number') {
+        return isNaN(valInput) ? 0 : Math.max(0, valInput);
+      }
       const str = String(valInput || '').trim();
+      if (!str) return 0;
       const isExplicitDollar = str.includes('$') || /usd/i.test(str);
+      const isExplicitIqd = str.includes('iqd') || /dinar/i.test(str);
       const sanitized = str.replace(/[$€£¥,]/g, '').replace(/(usd|iqd|dinar)/gi, '').trim();
       let val = parseFloat(sanitized) || 0;
       if (val <= 0) return 0;
@@ -596,11 +602,10 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
         if (isExplicitDollar) {
           return val;
         }
-        let dinarVal = val;
-        if (dinarVal > 0 && dinarVal < 1000) {
-          dinarVal = dinarVal * 1000;
+        if (isExplicitIqd || val >= 1000) {
+          return Math.round((val / currentUsdRate) * 100) / 100;
         }
-        return Math.round((dinarVal / currentUsdRate) * 100) / 100;
+        return val;
       }
     };
 
@@ -625,8 +630,13 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
 
     const currentUsdRate = settings?.usdToDinarRate || 1310;
     const processAmount = (valInput: number | string): number => {
+      if (typeof valInput === 'number') {
+        return isNaN(valInput) ? 0 : Math.max(0, valInput);
+      }
       const str = String(valInput || '').trim();
+      if (!str) return 0;
       const isExplicitDollar = str.includes('$') || /usd/i.test(str);
+      const isExplicitIqd = str.includes('iqd') || /dinar/i.test(str);
       const sanitized = str.replace(/[$€£¥,]/g, '').replace(/(usd|iqd|dinar)/gi, '').trim();
       let val = parseFloat(sanitized) || 0;
       if (val <= 0) return 0;
@@ -640,11 +650,10 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
         if (isExplicitDollar) {
           return val;
         }
-        let dinarVal = val;
-        if (dinarVal > 0 && dinarVal < 1000) {
-          dinarVal = dinarVal * 1000;
+        if (isExplicitIqd || val >= 1000) {
+          return Math.round((val / currentUsdRate) * 100) / 100;
         }
-        return Math.round((dinarVal / currentUsdRate) * 100) / 100;
+        return val;
       }
     };
 
@@ -766,8 +775,13 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
 
     const currentUsdRate = settings?.usdToDinarRate || 1310;
     const processAmount = (valInput: number | string): number => {
+      if (typeof valInput === 'number') {
+        return isNaN(valInput) ? 0 : Math.max(0, valInput);
+      }
       const str = String(valInput || '').trim();
+      if (!str) return 0;
       const isExplicitDollar = str.includes('$') || /usd/i.test(str);
+      const isExplicitIqd = str.includes('iqd') || /dinar/i.test(str);
       const sanitized = str.replace(/[$€£¥,]/g, '').replace(/(usd|iqd|dinar)/gi, '').trim();
       let val = parseFloat(sanitized) || 0;
       if (val <= 0) return 0;
@@ -781,11 +795,10 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
         if (isExplicitDollar) {
           return val;
         }
-        let dinarVal = val;
-        if (dinarVal > 0 && dinarVal < 1000) {
-          dinarVal = dinarVal * 1000;
+        if (isExplicitIqd || val >= 1000) {
+          return Math.round((val / currentUsdRate) * 100) / 100;
         }
-        return Math.round((dinarVal / currentUsdRate) * 100) / 100;
+        return val;
       }
     };
 
@@ -814,6 +827,11 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
         updated.bonus = nextBonus;
         updated.insurance = nextInsurance;
         updated.searchingDocFee = nextDocFee;
+        if (isForeign && nextDocFee > 0) {
+          updated.searchingDocFeeIqd = updates.searchingDocFeeIqd || (currentEmp.searchingDocFee === nextDocFee && currentEmp.searchingDocFeeIqd ? currentEmp.searchingDocFeeIqd : Math.round(nextDocFee * currentUsdRate));
+        } else {
+          updated.searchingDocFeeIqd = undefined;
+        }
         updated.absenceDeduction = nextAbsenceDeduct;
         updated.recruitmentFee = hasRecFee ? nextBase * 0.05 : 0;
         updated.netSalary = newNetSalary;
@@ -828,22 +846,18 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
       : 'Modified employee profile settings.';
 
     addAuditLog(
-      isArchivedCycle ? `Historical Record Updated [${activePeriod.name}]` : 'Employee Compensation Updated',
-      `${isArchivedCycle ? `[HISTORICAL ARCHIVE: ${activePeriod.name}] ` : ''}Updated ledger breakdown for ${currentEmp.name} (${id}). Net Salary: ${currSym}${newNetSalary.toLocaleString()}.`,
+      isArchivedCycle ? `Historical Ledger Updated [${activePeriod.name}]` : 'Employee Updated',
+      `${isArchivedCycle ? `[HISTORICAL ARCHIVE: ${activePeriod.name}] ` : ''}Updated ${currentEmp.name} (${id}): ${diffSummary}`,
       'edit_note',
       {
         employeeId: id,
         employeeName: currentEmp.name,
-        category: 'Salary',
+        category: 'Employee',
         changes: changesList,
-        badgeColor: isArchivedCycle ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-700 border border-blue-200',
+        badgeColor: 'bg-primary/10 text-primary border-primary/20',
       }
     );
-
-    showToast(
-      isArchivedCycle ? 'Historical Record Updated' : 'Employee Updated',
-      `${isArchivedCycle ? `[Historical ${activePeriod.name}] ` : ''}Record for ${currentEmp.name} saved and audited.`
-    );
+    showToast('Employee Updated', `Changes to ${currentEmp.name} have been committed to the active roster.`);
   };
 
   const toggleSalaryState = (id: string, explicitState?: 'Paid' | 'Not Yet' | 'Stopped') => {
@@ -920,11 +934,10 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
     if (!currentEmp) return;
 
     const isArchivedCycle = activePeriod.status === 'Archived';
-
     setEmployees((prev) => {
-      const updatedList = prev.filter((e) => e.id !== id);
-      setPeriodEmployeesMap((m) => ({ ...m, [activePeriodId]: updatedList }));
-      return updatedList;
+      const remaining = prev.filter((e) => e.id !== id);
+      setPeriodEmployeesMap((m) => ({ ...m, [activePeriodId]: remaining }));
+      return remaining;
     });
 
     const currSym = currentEmp.isForeign ? '$' : 'IQD ';
@@ -945,45 +958,25 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
 
   const importEmployees = (importedEmployees: Employee[], fileName: string) => {
     const currentUsdRate = settings?.usdToDinarRate || 1310;
-    // Process base salary scaling for local and recalculate net salary
+    // Process base salary scaling for local and recalculate net salary cleanly
     const processedEmployees = importedEmployees.map((emp) => {
       const isForeign = Boolean(emp.isForeign);
-      let baseSalary = Number(String(emp.baseSalary).replace(/[$€£¥,]/g, '').trim()) || 0;
+      let baseSalary = typeof emp.baseSalary === 'number'
+        ? emp.baseSalary
+        : (parseFloat(String(emp.baseSalary).replace(/[$€£¥,]/g, '').replace(/(usd|iqd|dinar)/gi, '').trim()) || 0);
+
       // Rule: If Local employee and base salary is < 20,000, multiply by 1000
       if (!isForeign && baseSalary > 0 && baseSalary < 20000) {
         baseSalary = baseSalary * 1000;
       }
 
-      const processAmount = (valInput: number | string): number => {
-        const str = String(valInput || '').trim();
-        const isExplicitDollar = str.includes('$') || /usd/i.test(str);
-        const sanitized = str.replace(/[$€£¥,]/g, '').replace(/(usd|iqd|dinar)/gi, '').trim();
-        let val = parseFloat(sanitized) || 0;
-        if (val <= 0) return 0;
-
-        if (!isForeign) {
-          if (val > 0 && val < 1000) {
-            val = val * 1000;
-          }
-          return val;
-        } else {
-          if (isExplicitDollar) {
-            return val;
-          }
-          let dinarVal = val;
-          if (dinarVal > 0 && dinarVal < 1000) {
-            dinarVal = dinarVal * 1000;
-          }
-          return Math.round((dinarVal / currentUsdRate) * 100) / 100;
-        }
-      };
-
-      const searchingDocFee = processAmount(emp.searchingDocFee || 0);
-      const bonus = processAmount(emp.bonus || 0);
-      const insurance = processAmount(emp.insurance || 0);
-      const absenceDeduction = processAmount(emp.absenceDeduction || 0);
+      const searchingDocFee = typeof emp.searchingDocFee === 'number' ? emp.searchingDocFee : (Number(emp.searchingDocFee) || 0);
+      const searchingDocFeeIqd = emp.searchingDocFeeIqd || (isForeign && searchingDocFee > 0 ? Math.round(searchingDocFee * currentUsdRate) : undefined);
+      const bonus = typeof emp.bonus === 'number' ? emp.bonus : (Number(emp.bonus) || 0);
+      const insurance = typeof emp.insurance === 'number' ? emp.insurance : (Number(emp.insurance) || 0);
+      const absenceDeduction = typeof emp.absenceDeduction === 'number' ? emp.absenceDeduction : (Number(emp.absenceDeduction) || 0);
       const hasRecruitmentFee = Boolean(emp.hasRecruitmentFee);
-      const recruitmentFee = hasRecruitmentFee ? baseSalary * 0.05 : 0;
+      const recruitmentFee = hasRecruitmentFee ? baseSalary * 0.05 : (typeof emp.recruitmentFee === 'number' ? emp.recruitmentFee : 0);
       const netSalary = Math.max(0, (baseSalary - recruitmentFee) + bonus - insurance - absenceDeduction - searchingDocFee);
 
       // Rule: If base salary is 0 or non-numeric, salaryState is Stopped
@@ -998,6 +991,7 @@ export function PayrollProvider({ children }: { children: ReactNode }) {
         bonus,
         insurance,
         searchingDocFee,
+        searchingDocFeeIqd,
         absenceDeduction,
         recruitmentFee,
         netSalary,

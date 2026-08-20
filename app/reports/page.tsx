@@ -1079,6 +1079,11 @@ function ReportsContent() {
                     <span className="font-sans font-medium">Search Fee:</span>
                     <span className="font-bold">
                       -{selectedVoucher.isForeign ? '$' : 'IQD '}{(selectedVoucher.searchingDocFee || 0).toLocaleString()}
+                      {selectedVoucher.isForeign && (
+                        <span className="text-[10px] text-amber-700 font-normal ml-1">
+                          (≈ IQD {(selectedVoucher.searchingDocFeeIqd || Math.round((selectedVoucher.searchingDocFee || 0) * usdRate)).toLocaleString()})
+                        </span>
+                      )}
                     </span>
                   </div>
                 )}

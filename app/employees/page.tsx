@@ -48,6 +48,39 @@ export default function EmployeesPage() {
   const [customPageSize, setCustomPageSize] = useState<number>(25);
   const [isCustomInputOpen, setIsCustomInputOpen] = useState(false);
 
+  type SortField =
+    | 'id'
+    | 'name'
+    | 'isForeign'
+    | 'baseSalary'
+    | 'recruitmentFee'
+    | 'bonus'
+    | 'insurance'
+    | 'absenceDeduction'
+    | 'searchingDocFee'
+    | 'netSalary'
+    | 'salaryState'
+    | 'paidAt';
+
+  type SortOrder = 'asc' | 'desc';
+
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      if (sortOrder === 'asc') {
+        setSortOrder('desc');
+      } else {
+        setSortField(null);
+        setSortOrder('asc');
+      }
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+  };
+
   // Multi-field search
   const filteredEmployees = employees.filter((emp) => {
     const q = search.toLowerCase();
@@ -73,17 +106,64 @@ export default function EmployeesPage() {
     return matchesSearch && matchesState && matchesDept && matchesForeign;
   });
 
+  // Dynamic Type-Aware Sorting (Numerical, Alphabetical, Date, State)
+  const sortedEmployees = [...filteredEmployees].sort((a, b) => {
+    if (!sortField) return 0;
+    const multiplier = sortOrder === 'asc' ? 1 : -1;
+
+    switch (sortField) {
+      case 'id':
+        return multiplier * a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' });
+      case 'name':
+        return multiplier * a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+      case 'isForeign':
+        return multiplier * (Number(Boolean(a.isForeign)) - Number(Boolean(b.isForeign)));
+      case 'baseSalary': {
+        const aVal = a.isForeign ? a.baseSalary * usdRate : a.baseSalary;
+        const bVal = b.isForeign ? b.baseSalary * usdRate : b.baseSalary;
+        return multiplier * (aVal - bVal);
+      }
+      case 'recruitmentFee':
+        return multiplier * ((a.recruitmentFee || 0) - (b.recruitmentFee || 0));
+      case 'bonus':
+        return multiplier * ((a.bonus || 0) - (b.bonus || 0));
+      case 'insurance':
+        return multiplier * ((a.insurance || 0) - (b.insurance || 0));
+      case 'absenceDeduction':
+        return multiplier * ((a.absenceDeduction || 0) - (b.absenceDeduction || 0));
+      case 'searchingDocFee':
+        return multiplier * ((a.searchingDocFee || 0) - (b.searchingDocFee || 0));
+      case 'netSalary': {
+        const aVal = a.isForeign ? a.netSalary * usdRate : a.netSalary;
+        const bVal = b.isForeign ? b.netSalary * usdRate : b.netSalary;
+        return multiplier * (aVal - bVal);
+      }
+      case 'salaryState':
+        return multiplier * (a.salaryState || '').localeCompare(b.salaryState || '');
+      case 'paidAt': {
+        const aTime = a.paidAt ? new Date(a.paidAt).getTime() : 0;
+        const bTime = b.paidAt ? new Date(b.paidAt).getTime() : 0;
+        if (!isNaN(aTime) && !isNaN(bTime) && (aTime > 0 || bTime > 0)) {
+          return multiplier * (aTime - bTime);
+        }
+        return multiplier * (a.paidAt || '').localeCompare(b.paidAt || '');
+      }
+      default:
+        return 0;
+    }
+  });
+
   const effectiveItemsPerPage =
     pageSizeMode === 'all'
-      ? Math.max(1, filteredEmployees.length)
+      ? Math.max(1, sortedEmployees.length)
       : pageSizeMode === 'custom'
         ? Math.max(1, customPageSize || 10)
         : parseInt(pageSizeMode, 10) || 10;
 
-  const totalPages = Math.ceil(filteredEmployees.length / effectiveItemsPerPage) || 1;
+  const totalPages = Math.ceil(sortedEmployees.length / effectiveItemsPerPage) || 1;
   const startIndex = (page - 1) * effectiveItemsPerPage;
-  const endIndex = Math.min(filteredEmployees.length, startIndex + effectiveItemsPerPage);
-  const paginatedEmployees = filteredEmployees.slice(startIndex, startIndex + effectiveItemsPerPage);
+  const endIndex = Math.min(sortedEmployees.length, startIndex + effectiveItemsPerPage);
+  const paginatedEmployees = sortedEmployees.slice(startIndex, startIndex + effectiveItemsPerPage);
 
   // Detailed Financial Aggregates
   const foreignCount = employees.filter((e) => e.isForeign).length;
@@ -470,24 +550,43 @@ export default function EmployeesPage() {
                   <option value="Operations">Operations</option>
                 </select>
 
-                {(search || stateFilter || deptFilter || foreignFilter) && (
+                {(search || stateFilter || deptFilter || foreignFilter || sortField) && (
                   <button
                     onClick={() => {
                       setSearch('');
                       setStateFilter('');
                       setDeptFilter('');
                       setForeignFilter('');
+                      setSortField(null);
+                      setSortOrder('asc');
                       setPage(1);
                     }}
-                    className="text-xs text-primary font-bold hover:underline px-2 cursor-pointer"
+                    className="text-xs text-primary font-bold hover:underline px-2 cursor-pointer flex items-center gap-1"
+                    title="Clear search, filters, and active sort order"
                   >
+                    <span className="material-symbols-outlined text-[13px]">restart_alt</span>
                     Reset
                   </button>
                 )}
               </div>
 
-              <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 font-mono shrink-0">
-                <span>{paginatedEmployees.length} of {filteredEmployees.length} records</span>
+              <div className="hidden lg:flex items-center gap-2 text-xs text-slate-400 font-mono shrink-0">
+                {sortField && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary font-bold text-[11px] border border-primary/20">
+                    <span className="material-symbols-outlined text-[13px]">
+                      {sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward'}
+                    </span>
+                    Sorted: {sortField} ({sortOrder === 'asc' ? 'Asc' : 'Desc'})
+                    <button
+                      onClick={() => setSortField(null)}
+                      className="ml-0.5 hover:text-slate-900"
+                      title="Clear sort"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                <span>{paginatedEmployees.length} of {sortedEmployees.length} records</span>
               </div>
             </div>
 
@@ -497,18 +596,223 @@ export default function EmployeesPage() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="bg-slate-50/90 border-b border-slate-200 text-slate-600 font-bold text-xs uppercase tracking-wider">
-                      <th className="py-3 px-3 text-center w-[95px]">ID</th>
-                      <th className="py-3 px-3 text-left min-w-[180px]">Empl Name</th>
-                      <th className="py-3 px-2 text-center w-[95px]">Status</th>
-                      <th className="py-3 px-2 text-center min-w-[130px]">Base Salary</th>
-                      <th className="py-3 px-2 text-center w-[120px]">Arrival (0.05)</th>
-                      <th className="py-3 px-2 text-center w-[95px]">Bonus</th>
-                      <th className="py-3 px-2 text-center w-[95px]">Insurance</th>
-                      <th className="py-3 px-2 text-center w-[110px]">Absence</th>
-                      <th className="py-3 px-2 text-center w-[110px]">Search Fee</th>
-                      <th className="py-3 px-3 text-center bg-slate-100/70 min-w-[210px]">The Net Salary (Payout)</th>
-                      <th className="py-3 px-2 text-center w-[75px]">State</th>
-                      <th className="py-3 px-3 text-center min-w-[145px]">Paid Date &amp; Time</th>
+                      {/* ID */}
+                      <th
+                        onClick={() => handleSort('id')}
+                        className={`py-3 px-3 text-center w-[95px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'id' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by ID (Ascending / Descending)"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>ID</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'id' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'id' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* EMPL NAME */}
+                      <th
+                        onClick={() => handleSort('name')}
+                        className={`py-3 px-3 text-left min-w-[180px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'name' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort alphabetically by Name (A-Z / Z-A)"
+                      >
+                        <div className="inline-flex items-center justify-start gap-1">
+                          <span>Empl Name</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'name' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'name' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* STATUS (Foreign / Local) */}
+                      <th
+                        onClick={() => handleSort('isForeign')}
+                        className={`py-3 px-2 text-center w-[95px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'isForeign' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by Status / Currency (Foreign USD vs Local Dinar)"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Status</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'isForeign' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'isForeign' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* BASE SALARY */}
+                      <th
+                        onClick={() => handleSort('baseSalary')}
+                        className={`py-3 px-2 text-center min-w-[130px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'baseSalary' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Base Salary"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Base Salary</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'baseSalary' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'baseSalary' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* ARRIVAL (0.05) */}
+                      <th
+                        onClick={() => handleSort('recruitmentFee')}
+                        className={`py-3 px-2 text-center w-[120px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'recruitmentFee' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by Arrival Fee deduction"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Arrival (0.05)</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'recruitmentFee' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'recruitmentFee' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* BONUS */}
+                      <th
+                        onClick={() => handleSort('bonus')}
+                        className={`py-3 px-2 text-center w-[95px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'bonus' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Bonus amount"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Bonus</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'bonus' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'bonus' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* INSURANCE */}
+                      <th
+                        onClick={() => handleSort('insurance')}
+                        className={`py-3 px-2 text-center w-[95px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'insurance' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Insurance contribution"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Insurance</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'insurance' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'insurance' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* ABSENCE */}
+                      <th
+                        onClick={() => handleSort('absenceDeduction')}
+                        className={`py-3 px-2 text-center w-[110px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'absenceDeduction' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by Absence deduction"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Absence</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'absenceDeduction' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'absenceDeduction' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* SEARCH FEE */}
+                      <th
+                        onClick={() => handleSort('searchingDocFee')}
+                        className={`py-3 px-2 text-center w-[110px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'searchingDocFee' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Search Document Fee"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Search Fee</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'searchingDocFee' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'searchingDocFee' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* THE NET SALARY (PAYOUT) */}
+                      <th
+                        onClick={() => handleSort('netSalary')}
+                        className={`py-3 px-3 text-center bg-slate-100/70 min-w-[210px] select-none cursor-pointer transition-colors hover:bg-slate-200/80 ${
+                          sortField === 'netSalary' ? 'bg-primary/10 text-primary' : ''
+                        }`}
+                        title="Click to sort numerically by Net Salary Payout"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span className="font-black">The Net Salary (Payout)</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'netSalary' ? 'text-primary font-black' : 'text-slate-400'
+                          }`}>
+                            {sortField === 'netSalary' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* STATE */}
+                      <th
+                        onClick={() => handleSort('salaryState')}
+                        className={`py-3 px-2 text-center w-[75px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'salaryState' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort by State (Paid / Not Yet / Stopped)"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>State</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'salaryState' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'salaryState' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* PAID DATE & TIME */}
+                      <th
+                        onClick={() => handleSort('paidAt')}
+                        className={`py-3 px-3 text-center min-w-[145px] select-none cursor-pointer transition-colors hover:bg-slate-100 ${
+                          sortField === 'paidAt' ? 'bg-primary/5 text-primary' : ''
+                        }`}
+                        title="Click to sort chronologically by Paid Date & Time"
+                      >
+                        <div className="inline-flex items-center justify-center gap-1 w-full">
+                          <span>Paid Date &amp; Time</span>
+                          <span className={`material-symbols-outlined text-[14px] ${
+                            sortField === 'paidAt' ? 'text-primary font-black' : 'text-slate-300'
+                          }`}>
+                            {sortField === 'paidAt' ? (sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more'}
+                          </span>
+                        </div>
+                      </th>
+
+                      {/* ACTIONS */}
                       <th className="py-3 px-3 text-center w-[90px]">Actions</th>
                     </tr>
                   </thead>
@@ -756,7 +1060,7 @@ export default function EmployeesPage() {
                                     <span className="text-amber-700 font-bold text-sm">-{currSymbol}{(emp.searchingDocFee || 0).toLocaleString()}</span>
                                     {isForeign && (
                                       <span className="text-[10px] text-slate-400 font-mono mt-0.5">
-                                        ≈ IQD {Math.round((emp.searchingDocFee || 0) * usdRate).toLocaleString()}
+                                        ≈ IQD {(emp.searchingDocFeeIqd || Math.round((emp.searchingDocFee || 0) * usdRate)).toLocaleString()}
                                       </span>
                                     )}
                                   </>
@@ -1305,7 +1609,7 @@ export default function EmployeesPage() {
                                 -{isFor ? '$' : 'IQD '}{(selectedEmployee.searchingDocFee || 0).toLocaleString()}
                                 {isFor && (
                                   <span className="text-[10px] text-slate-400 font-normal ml-1">
-                                    (≈ IQD {Math.round((selectedEmployee.searchingDocFee || 0) * usdRate).toLocaleString()})
+                                    (≈ IQD {(selectedEmployee.searchingDocFeeIqd || Math.round((selectedEmployee.searchingDocFee || 0) * usdRate)).toLocaleString()})
                                   </span>
                                 )}
                               </>
@@ -1417,8 +1721,13 @@ export default function EmployeesPage() {
                       }
 
                       const processAmount = (valInput: number | string): number => {
+                        if (typeof valInput === 'number') {
+                          return isNaN(valInput) ? 0 : Math.max(0, valInput);
+                        }
                         const str = String(valInput || '').trim();
+                        if (!str) return 0;
                         const isExplicitDollar = str.includes('$') || /usd/i.test(str);
+                        const isExplicitIqd = str.includes('iqd') || /dinar/i.test(str);
                         const sanitized = str.replace(/[$€£¥,]/g, '').replace(/(usd|iqd|dinar)/gi, '').trim();
                         let val = parseFloat(sanitized) || 0;
                         if (val <= 0) return 0;
@@ -1432,11 +1741,10 @@ export default function EmployeesPage() {
                           if (isExplicitDollar) {
                             return val;
                           }
-                          let dinarVal = val;
-                          if (dinarVal > 0 && dinarVal < 1000) {
-                            dinarVal = dinarVal * 1000;
+                          if (isExplicitIqd || val >= 1000) {
+                            return Math.round((val / usdRate) * 100) / 100;
                           }
-                          return Math.round((dinarVal / usdRate) * 100) / 100;
+                          return val;
                         }
                       };
 

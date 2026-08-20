@@ -50,14 +50,56 @@ function getColumnLetter(colIndex: number): string {
   return letter;
 }
 
+// Helper to check if text is a non-employee title, banner, header, or summary row (exact and phrase-level matching)
+function isNonEmployeeText(text: string): boolean {
+  if (!text) return true;
+  const clean = text.toLowerCase().trim().replace(/[:\-_\s]+/g, ' ');
+  
+  // Exact match tokens (where the entire text equals this administrative term)
+  const exactMatches = [
+    'total', 'grand total', 'subtotal', 'sum', 'summary', 'sheet', 'payroll', 'report',
+    'signature', 'signatures', 'signed', 'approved', 'checked', 'audited', 'audit',
+    'director', 'manager', 'accountant', 'dean', 'head of', 'department head',
+    'dinar', 'dollar', 'usd', 'iqd', 'page', 'office', 'dept', 'department', 'division',
+    'list of', 'staff list', 'section', 'governorate', 'ministry', 'payroll insight',
+    'date', 'note', 'notes', 'remarks', 'remark', 'notice', 'salary', 'base salary',
+    'net salary', 'full name', 'employee name', 'staff name', 'rank', 'title',
+    'serial', 'seq', 'no', 'no.', 'count', 'status', 'balance',
+    
+    // Arabic exact matches
+    'مجموع', 'المجموع', 'الإجمالي', 'اجمالي', 'المجموع الكلي', 'مجموع الرواتب', 'كشف', 'تقرير',
+    'توقيع', 'التوقيع', 'المحاسب', 'محاسب', 'المدير', 'مدير', 'العميد', 'عميد',
+    'رئيس القسم', 'معاون العميد', 'دينار', 'دولار', 'صفحة', 'قسم', 'القسم',
+    'كلية', 'الكلية', 'جامعة', 'الجامعة', 'وزارة', 'الوزارة', 'ملاحظة', 'ملاحظات',
+    'الاسم', 'اسم الموظف', 'الاسم الثلاثي', 'الاسم الرباعي', 'اسم التدريسي', 'الاسم الكامل',
+    'الراتب', 'الراتب الاسمي', 'الراتب الكلي', 'الصافي', 'صافي الراتب', 'التاريخ', 'تاريخ',
+    'العدد', 'ت', 'تسلسل', 'تدقيق', 'المدقق', 'مدقق', 'حسابات', 'الحسابات',
+    'عمادة', 'رئاسة', 'استقطاع', 'استقطاعات', 'جمهورية العراق', 'وزارة التعليم'
+  ];
+
+  if (exactMatches.includes(clean)) return true;
+
+  // Phrase-level prefixes (e.g. "مجموع الرواتب ...", "Note: ...", "Department of ...")
+  const prefixMatches = [
+    'total ', 'grand total ', 'summary ', 'note ', 'notes ', 'remarks ',
+    'department of ', 'college of ', 'faculty of ', 'university of ', 'signature of ',
+    'مجموع ', 'المجموع ', 'إجمالي ', 'اجمالي ', 'ملاحظة ', 'ملاحظات ',
+    'قسم ', 'كلية ', 'جامعة ', 'توقيع ', 'عمادة ', 'رئاسة '
+  ];
+
+  return prefixMatches.some((prefix) => clean.startsWith(prefix));
+}
+
 // Helper to check if a row contains real data and is not completely empty / blank
 function isMeaningfulDataRow(row: any[]): boolean {
   if (!row || !Array.isArray(row) || row.length === 0) return false;
-  return row.some((cell) => {
+  const nonEmptyCells = row.filter((cell) => {
     if (cell === null || cell === undefined) return false;
     const str = String(cell).trim();
     return str !== '' && str !== '-' && str !== 'null' && str !== 'undefined';
   });
+  // Empty or single cell in an entire row is a merged banner / title / blank
+  return nonEmptyCells.length > 0;
 }
 
 // Helper to process sheet rows taking into account skipped title rows and header configuration
@@ -213,14 +255,16 @@ export default function ExcelImportPage() {
     { num: 5, label: 'Confirm & Ingest', icon: 'task_alt' },
   ];
 
-  // The active sheet used for column preview
-  const primarySelectedSheet = collegeSheets.find((s) => s.id === previewSheetId) ||
-    collegeSheets.find((s) => selectedSheetIds.includes(s.id)) ||
-    collegeSheets[0];
-
   const selectedSheets = collegeSheets.filter((s) => selectedSheetIds.includes(s.id));
   const importedSheetsCount = collegeSheets.filter((s) => s.isImported).length;
   const totalSelectedRecords = selectedSheets.reduce((sum, s) => sum + s.recordsCount, 0);
+
+  // The active sheet used for column preview (strictly from currently selected sheets)
+  const primarySelectedSheet =
+    selectedSheets.find((s) => s.id === previewSheetId) ||
+    selectedSheets[0] ||
+    collegeSheets.find((s) => s.id === previewSheetId) ||
+    collegeSheets[0];
 
   // Real Excel/CSV Parser directly from file with No-Header and Skip-Row Support
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -338,15 +382,24 @@ export default function ExcelImportPage() {
       const exists = prev.includes(sheetId);
       const updated = exists ? prev.filter((id) => id !== sheetId) : [...prev, sheetId];
 
-      if (!exists && !previewSheetId) {
-        setPreviewSheetId(sheetId);
-        const s = collegeSheets.find((sheet) => sheet.id === sheetId);
+      let nextPreviewId = previewSheetId;
+      if (!exists) {
+        // If newly selected, focus on this sheet if no preview or if previous preview wasn't selected or if single selected
+        if (!nextPreviewId || !updated.includes(nextPreviewId) || updated.length === 1) {
+          nextPreviewId = sheetId;
+        }
+      } else {
+        if (!updated.includes(previewSheetId)) {
+          nextPreviewId = updated[0] || '';
+        }
+      }
+
+      if (nextPreviewId && nextPreviewId !== previewSheetId) {
+        setPreviewSheetId(nextPreviewId);
+        const s = collegeSheets.find((sheet) => sheet.id === nextPreviewId);
         if (s) generateMappingsForSheet(s);
-      } else if (exists && previewSheetId === sheetId) {
-        const remaining = updated[0] || '';
-        setPreviewSheetId(remaining);
-        const s = collegeSheets.find((sheet) => sheet.id === remaining);
-        if (s) generateMappingsForSheet(s);
+      } else if (!nextPreviewId) {
+        setPreviewSheetId('');
       }
 
       return updated;
@@ -365,6 +418,7 @@ export default function ExcelImportPage() {
 
   const handleDeselectAllSheets = () => {
     setSelectedSheetIds([]);
+    setPreviewSheetId('');
     showToast('Cleared Selection', 'All sheets deselected.', 'info');
   };
 
@@ -473,8 +527,8 @@ export default function ExcelImportPage() {
       sheet.rawRows.forEach((row, rIdx) => {
         // Skip completely empty or blank row
         if (!row || !Array.isArray(row) || row.length === 0) return;
-        const isRowEmpty = row.every((c) => c === null || c === undefined || String(c).trim() === '' || String(c).trim() === '-' || String(c).trim() === 'null');
-        if (isRowEmpty) return;
+        const nonEmptyCells = row.filter((c) => c !== null && c !== undefined && String(c).trim() !== '' && String(c).trim() !== '-' && String(c).trim() !== 'null' && String(c).trim() !== 'undefined');
+        if (nonEmptyCells.length <= 1) return;
 
         const getVal = (fieldPattern: string) => {
           const key = Object.keys(fieldIndices).find((k) => k.includes(fieldPattern.toLowerCase()));
@@ -488,17 +542,38 @@ export default function ExcelImportPage() {
           return '';
         };
 
-        const rawName = getVal('name') || getVal('staff') || getVal('employee') || getVal('fullname');
+        const rawName = (getVal('name') || getVal('staff') || getVal('employee') || getVal('fullname')).trim();
         const rawId = getVal('id') || getVal('code') || getVal('no');
         const rawSalaryStr = getVal('base') || getVal('salary') || getVal('wage') || getVal('amount') || getVal('net');
 
-        // If mapped name, id, and salary are all empty, verify if the row has any text at all; if not, skip it
-        if (!rawName && !rawId && !rawSalaryStr) {
-          const hasAnyCellText = row.some((c) => c !== null && c !== undefined && String(c).trim().length > 0 && isNaN(Number(c)));
-          if (!hasAnyCellText) return;
+        // Check if name is completely empty, too short, or lacks letters
+        if (!rawName || rawName.length < 2) {
+          return;
         }
 
-        const finalName = rawName || `Staff Member ${rIdx + 1}`;
+        // Ignore purely numeric names (e.g. serial numbers 1, 2, 3...) or strings without Arabic/Latin letters
+        if (/^\d+$/.test(rawName) || !/[a-zA-Z\u0600-\u06FF]/.test(rawName)) {
+          return;
+        }
+
+        // Recognise and ignore merged title cells, section titles, headers, and footer summary rows
+        if (isNonEmployeeText(rawName)) {
+          return;
+        }
+
+        // Check if the name cell is an echo of an Excel header
+        const nameLower = rawName.toLowerCase();
+        const isHeaderEcho = mappingRows.some((m) => m.excelHeader && m.excelHeader.toLowerCase().trim() === nameLower);
+        if (isHeaderEcho) {
+          return;
+        }
+
+        // Detect merged banner cells or notes (only 2 cells filled and no salary / ID)
+        if (nonEmptyCells.length <= 2 && !rawSalaryStr && !rawId) {
+          return;
+        }
+
+        const finalName = rawName;
         const finalId = rawId || `EMP-${sheet.name.substring(0, 3).toUpperCase()}-${(rIdx + 1).toString().padStart(3, '0')}`;
         const rawDept = getVal('dept') || getVal('department') || getVal('college') || sheet.name;
         
@@ -518,6 +593,11 @@ export default function ExcelImportPage() {
         // Rule: If Local employee and base salary is < 20,000, multiply by 1000 (e.g. 4,500 -> 4,500,000)
         if (!isForeign && cleanSalaryNum > 0 && cleanSalaryNum < 20000) {
           cleanSalaryNum = cleanSalaryNum * 1000;
+        }
+
+        // If row has no salary and no employee ID and sparse cells, it is likely a section header / note
+        if (!rawSalaryStr && cleanSalaryNum <= 0 && !rawId && nonEmptyCells.length < 4) {
+          return;
         }
 
         const currentUsdRate = settings?.usdToDinarRate || 1310;
@@ -553,9 +633,30 @@ export default function ExcelImportPage() {
           }
         };
 
+        // Returns the original IQD value for foreign employees (before USD conversion),
+        // so it can be stored and displayed accurately regardless of current exchange rate.
+        const parseCurrencyAmountIqd = (rawStr: string): number => {
+          if (!rawStr || !isForeign) return 0;
+          const isExplicitDollar = rawStr.includes('$') || /usd/i.test(rawStr);
+          if (isExplicitDollar) return 0; // Already in USD, no IQD equivalent to store
+          const sanitized = rawStr
+            .replace(/[$€£¥]/g, '')
+            .replace(/(usd|iqd|dinar)/gi, '')
+            .replace(/,/g, '')
+            .trim();
+          let amount = parseFloat(sanitized) || 0;
+          if (amount <= 0) return 0;
+          if (amount > 0 && amount < 1000) {
+            amount = amount * 1000;
+          }
+          return amount;
+        };
+
         // Searching Doc Fee: subtracted from base salary
         const rawDocFee = getVal('searching') || getVal('doc') || getVal('verification') || getVal('fee');
         const searchingDocFee = parseCurrencyAmount(rawDocFee);
+        // Store the original IQD amount for foreign employees so display is accurate (e.g. 50,000 IQD)
+        const searchingDocFeeIqd = isForeign ? (parseCurrencyAmountIqd(rawDocFee) || (searchingDocFee > 0 ? Math.round(searchingDocFee * currentUsdRate) : 0)) : 0;
 
         // Arrival fee (0.05): Default to False (0) since decided later
         const rawArrival = (getVal('arrival') || getVal('agency') || getVal('recruitment')).toLowerCase();
@@ -608,6 +709,7 @@ export default function ExcelImportPage() {
           department: 'Engineering',
           baseSalary: cleanSalaryNum,
           searchingDocFee,
+          searchingDocFeeIqd: searchingDocFeeIqd > 0 ? searchingDocFeeIqd : undefined,
           bonus,
           insurance,
           absenceDays,
@@ -695,6 +797,17 @@ export default function ExcelImportPage() {
       if (selectedSheetIds.length === 0) {
         showToast('Selection Required', 'Please select at least one paper sheet to map and import.', 'warning');
         return;
+      }
+      // Ensure previewSheetId and generated mappings match the active selected sheet
+      let targetSheet = collegeSheets.find((s) => s.id === previewSheetId && selectedSheetIds.includes(s.id));
+      if (!targetSheet) {
+        targetSheet = collegeSheets.find((s) => selectedSheetIds.includes(s.id));
+        if (targetSheet) {
+          setPreviewSheetId(targetSheet.id);
+        }
+      }
+      if (targetSheet) {
+        generateMappingsForSheet(targetSheet);
       }
       setCurrentStep(3);
     } else if (currentStep === 3) {
@@ -1429,7 +1542,16 @@ export default function ExcelImportPage() {
                               {emp.hasRecruitmentFee ? `${currSymbol}${(emp.recruitmentFee || 0).toLocaleString()} (0.05)` : '0%'}
                             </td>
                             <td className="py-2.5 px-2 text-center text-amber-700 font-bold whitespace-nowrap">
-                              {(emp.searchingDocFee || 0) > 0 ? `-${currSymbol}${(emp.searchingDocFee || 0).toLocaleString()}` : '-'}
+                              {(emp.searchingDocFee || 0) > 0 ? (
+                                <div className="flex flex-col items-center">
+                                  <span>-{currSymbol}{(emp.searchingDocFee || 0).toLocaleString()}</span>
+                                  {isForeign && (
+                                    <span className="text-[9px] text-slate-400 font-normal font-mono">
+                                      ≈ IQD {(emp.searchingDocFeeIqd || Math.round((emp.searchingDocFee || 0) * (settings?.usdToDinarRate || 1310))).toLocaleString()}
+                                    </span>
+                                  )}
+                                </div>
+                              ) : '-'}
                             </td>
                             <td className="py-2.5 px-2 text-center font-bold text-primary whitespace-nowrap">
                               {currSymbol}{emp.netSalary.toLocaleString()}

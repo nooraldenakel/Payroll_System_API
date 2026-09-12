@@ -27,7 +27,7 @@ fun Application.configureRouting() {
 
     routing {
         // Public Endpoints
-        systemRoutes(auditRepo)
+        systemRoutes()
 
         // Sensitive Auth Endpoints (10 req / 30s per IP against brute force)
         rateLimit(AUTH_RATE_LIMIT) {

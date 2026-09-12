@@ -1,17 +1,14 @@
 package com.payroll.routes
 
-import com.payroll.data.database.DatabaseFactory
-import com.payroll.domain.models.ApiResponse
 import com.payroll.domain.models.HealthCheckResponse
 import com.payroll.domain.models.ServiceInfoResponse
-import com.payroll.domain.models.SimpleResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.time.LocalDateTime
 
-fun Route.systemRoutes(auditRepo: com.payroll.domain.repository.IAuditLogRepository? = null) {
+fun Route.systemRoutes() {
     get("/") {
         call.respond(
             HttpStatusCode.OK,
@@ -34,8 +31,7 @@ fun Route.systemRoutes(auditRepo: com.payroll.domain.repository.IAuditLogReposit
                     "auditLogs" to "/api/audit-logs",
                     "importHistory" to "/api/imports",
                     "settings" to "/api/settings",
-                    "health" to "/health",
-                    "seed" to "/api/seed?reset=true"
+                    "health" to "/health"
                 )
             )
         )
@@ -50,39 +46,5 @@ fun Route.systemRoutes(auditRepo: com.payroll.domain.repository.IAuditLogReposit
                 timestamp = LocalDateTime.now().toString()
             )
         )
-    }
-
-    post("/api/seed") {
-        val reset = call.request.queryParameters["reset"]?.toBoolean() ?: false
-        if (reset) {
-            DatabaseFactory.reseedDatabase()
-            auditRepo?.create(
-                com.payroll.domain.models.CreateAuditLogRequest(
-                    action = "Database Reseeded",
-                    user = "System / Administrator",
-                    detail = "Database was reseeded with default institutional roster, periods, and audit trail",
-                    icon = "restart_alt",
-                    badgeColor = "bg-teal-50 text-teal-700 border border-teal-200",
-                    category = "System"
-                )
-            )
-            call.respond(
-                HttpStatusCode.OK,
-                ApiResponse(
-                    success = true,
-                    message = "Database reseeded successfully with real institutional roster, periods, and audit trail.",
-                    data = SimpleResponse(true, "Database reseeded with real enterprise records")
-                )
-            )
-        } else {
-            call.respond(
-                HttpStatusCode.OK,
-                ApiResponse(
-                    success = true,
-                    message = "Database schema and seeds are active. Use /api/seed?reset=true to force reseed with real records.",
-                    data = SimpleResponse(true, "Database connected and operational")
-                )
-            )
-        }
     }
 }

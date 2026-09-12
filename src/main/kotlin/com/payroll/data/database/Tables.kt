@@ -120,7 +120,7 @@ object SystemSettingsTable : Table("system_settings") {
     val autoSync = bool("auto_sync").default(true)
     val strictAudit = bool("strict_audit").default(true)
     val emailAlerts = bool("email_alerts").default(true)
-    val alertRecipients = text("alert_recipients").default("audit-board@gov.iq, finance.director@gov.iq")
+    val alertRecipients = text("alert_recipients").default("")
     val autoReportSchedule = varchar("auto_report_schedule", 32).default("Monthly")
     val multiCurrency = bool("multi_currency").default(true)
     val twoFactorAuth = bool("two_factor_auth").default(true)

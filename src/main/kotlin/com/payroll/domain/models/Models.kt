@@ -123,7 +123,7 @@ data class CreatePeriodRequest(
     val status: String = "Draft",
     val month: String = "AUG",
     val year: Int = 2026,
-    val creator: String = "Aziz Sulaiman"
+    val creator: String? = null
 )
 
 @Serializable
@@ -259,13 +259,6 @@ data class BatchImportResponse(
 // ==========================================
 
 @Serializable
-data class AuditChange(
-    val field: String,
-    val from: String,
-    val to: String
-)
-
-@Serializable
 data class AuditLogEntryDto(
     val id: String,
     val time: String,
@@ -327,13 +320,6 @@ data class CreateImportRecordRequest(
 // ==========================================
 
 @Serializable
-data class DynamicFieldDef(
-    val id: String,
-    val name: String,
-    val type: String
-)
-
-@Serializable
 data class ColumnConfigDto(
     val key: String,
     val label: String,
@@ -346,16 +332,6 @@ data class ColumnConfigDto(
 @Serializable
 data class UpdateColumnsRequest(
     val columns: List<ColumnConfigDto>
-)
-
-@Serializable
-data class AdminUserDef(
-    val id: String,
-    val name: String,
-    val initials: String,
-    val email: String,
-    val role: String,
-    val status: String
 )
 
 @Serializable

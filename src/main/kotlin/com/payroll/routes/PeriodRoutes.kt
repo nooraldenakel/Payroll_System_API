@@ -48,7 +48,8 @@ fun Route.periodRoutes(
         post {
             val req = call.receive<CreatePeriodRequest>()
             val operator = call.authenticatedUser()
-            val created = periodRepo.create(req)
+            val effectiveReq = if (req.creator.isNullOrBlank()) req.copy(creator = operator) else req
+            val created = periodRepo.create(effectiveReq)
 
             auditRepo.create(
                 CreateAuditLogRequest(

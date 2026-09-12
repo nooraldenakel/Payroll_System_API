@@ -207,7 +207,7 @@ class PeriodRepositoryImpl : IPeriodRepository {
             it[paidAmount] = 0.0
             it[remainingAmount] = 0.0
             it[processedCount] = 0
-            it[creator] = request.creator
+            it[creator] = request.creator ?: "System"
             it[createdOn] = LocalDateTime.now().toLocalDate().toString()
             it[month] = request.month
             it[year] = request.year
@@ -696,26 +696,26 @@ class SettingsRepositoryImpl : ISettingsRepository {
             .map(::toDto)
             .singleOrNull()
             ?: SystemSettingsDto(
-                institutionName = "General Directorate of Municipalities & Public Works",
-                institutionCode = "GOV-IQ-FIN-2026-HQ",
-                institutionType = "Government Ministry (Public Sector)",
-                fiscalYear = "FY 2026 – 2027",
-                defaultCurrency = "Dinar (IQD)",
-                usdToDinarRate = 1310.0,
-                sealWatermarkEnabled = true,
-                sealQrEnabled = true,
+                institutionName = "Payroll System",
+                institutionCode = "SYS-PAYROLL-01",
+                institutionType = "Enterprise",
+                fiscalYear = "2026",
+                defaultCurrency = "USD",
+                usdToDinarRate = 1.0,
+                sealWatermarkEnabled = false,
+                sealQrEnabled = false,
                 sealImageUrl = "",
-                autoSync = true,
+                autoSync = false,
                 strictAudit = true,
-                emailAlerts = true,
-                alertRecipients = "audit-board@gov.iq, finance.director@gov.iq",
+                emailAlerts = false,
+                alertRecipients = "",
                 autoReportSchedule = "Monthly",
-                multiCurrency = true,
-                twoFactorAuth = true,
-                twoFactorEnforcement = "Admins & Disbursers",
-                sessionTimeoutMinutes = 15,
-                dualSignatureDisbursement = true,
-                anomalyDetectionAlerts = true
+                multiCurrency = false,
+                twoFactorAuth = false,
+                twoFactorEnforcement = "Admins",
+                sessionTimeoutMinutes = 30,
+                dualSignatureDisbursement = false,
+                anomalyDetectionAlerts = false
             )
     }
 

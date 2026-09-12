@@ -20,6 +20,8 @@ fun Route.employeeRoutes(
             val department = call.request.queryParameters["department"]
             val salaryState = call.request.queryParameters["salaryState"]
             val search = call.request.queryParameters["search"]
+                ?: call.request.queryParameters["q"]
+                ?: call.request.queryParameters["query"]
             val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
             val pageSize = call.request.queryParameters["pageSize"]?.toIntOrNull()
                 ?: call.request.queryParameters["limit"]?.toIntOrNull()

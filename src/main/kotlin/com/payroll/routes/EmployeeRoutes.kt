@@ -158,11 +158,45 @@ fun Route.employeeRoutes(
                 return@post
             }
 
+            val existingEmployees = employeeRepo.getAll(periodId = req.periodId)
+            val existingByName = existingEmployees.associateBy { it.name.trim().lowercase() }
+            val existingById = existingEmployees.associateBy { it.id.trim().lowercase() }
+
             val operator = call.authenticatedUser()
             var imported = 0
             for (empReq in req.employees) {
                 try {
-                    manageEmployeeUseCase.createEmployee(empReq.copy(periodId = req.periodId), operator = "Batch Import ($operator)")
+                    val existing = (empReq.id?.let { existingById[it.trim().lowercase()] })
+                        ?: existingByName[empReq.name.trim().lowercase()]
+
+                    if (existing != null) {
+                        manageEmployeeUseCase.updateEmployee(
+                            id = existing.id,
+                            req = UpdateEmployeeRequest(
+                                name = empReq.name,
+                                initials = empReq.initials,
+                                department = empReq.department,
+                                type = empReq.type,
+                                baseSalary = empReq.baseSalary,
+                                bonus = empReq.bonus,
+                                insurance = empReq.insurance,
+                                absenceDays = empReq.absenceDays,
+                                absenceDeduction = empReq.absenceDeduction,
+                                searchingDocFee = empReq.searchingDocFee,
+                                isForeign = empReq.isForeign,
+                                currency = empReq.currency,
+                                hasRecruitmentFee = empReq.hasRecruitmentFee,
+                                recruitmentFee = empReq.recruitmentFee,
+                                salaryState = empReq.salaryState,
+                                joinDate = empReq.joinDate,
+                                email = empReq.email,
+                                phone = empReq.phone
+                            ),
+                            operator = "Batch Import ($operator)"
+                        )
+                    } else {
+                        manageEmployeeUseCase.createEmployee(empReq.copy(periodId = req.periodId), operator = "Batch Import ($operator)")
+                    }
                     imported++
                 } catch (e: Exception) {
                     // continue with next

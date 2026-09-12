@@ -98,21 +98,21 @@ class SettingsRepositoryImpl : ISettingsRepository {
     private val jsonHelper = Json { ignoreUnknownKeys = true }
 
     private val defaultColumns = listOf(
-        ColumnConfigDto("name", "Employee Name", "Text", visible = true, required = true, excelAliases = listOf("name", "employee name", "full name", "employee", "staff name", "الاسم", "اسم الموظف")),
-        ColumnConfigDto("department", "Department", "Text", visible = true, required = true, excelAliases = listOf("department", "dept", "division", "unit", "القسم", "الدائرة")),
-        ColumnConfigDto("type", "Employment Type", "Text", visible = true, required = false, excelAliases = listOf("type", "employment type", "contract type", "contract", "نوع التعيين", "الصفة")),
-        ColumnConfigDto("baseSalary", "Base Salary", "Currency", visible = true, required = true, excelAliases = listOf("base salary", "basic salary", "salary", "base pay", "net base", "الراتب الاسمي", "الاسمي")),
-        ColumnConfigDto("bonus", "Bonus / Allowances", "Currency", visible = true, required = false, excelAliases = listOf("bonus", "allowance", "incentive", "المخصصات", "مخصصات")),
+        ColumnConfigDto("name", "Employee Name", "Text", visible = true, required = true, excelAliases = listOf("name", "employee name", "employeename", "employee_name", "full name", "fullname", "employee", "staff name", "الاسم", "اسم الموظف")),
+        ColumnConfigDto("department", "Department", "Text", visible = true, required = true, excelAliases = listOf("department", "dept", "division", "unit", "section", "القسم", "الدائرة")),
+        ColumnConfigDto("type", "Employment Type", "Text", visible = true, required = false, excelAliases = listOf("type", "employment type", "employmenttype", "employment_type", "contract type", "contract", "نوع التعيين", "الصفة")),
+        ColumnConfigDto("baseSalary", "Base Salary", "Currency", visible = true, required = true, excelAliases = listOf("baseSalary", "basesalary", "base salary", "base_salary", "basic salary", "basicsalary", "salary", "base pay", "net base", "الراتب الاسمي", "الاسمي")),
+        ColumnConfigDto("bonus", "Bonus / Allowances", "Currency", visible = true, required = false, excelAliases = listOf("bonus", "bonuses", "allowance", "incentive", "المخصصات", "مخصصات")),
         ColumnConfigDto("insurance", "Insurance & Pension", "Currency", visible = true, required = false, excelAliases = listOf("insurance", "health insurance", "social security", "التقاعد", "الضمان")),
-        ColumnConfigDto("absenceDays", "Absence Days", "Number", visible = true, required = false, excelAliases = listOf("absence days", "absences", "absence count", "ايام الغياب", "الغياب")),
-        ColumnConfigDto("absenceDeduction", "Absence Deduction", "Currency", visible = true, required = false, excelAliases = listOf("absence deduction", "absence fee", "absence penalty", "استقطاع الغياب")),
-        ColumnConfigDto("searchingDocFee", "Search Fee (USD)", "Currency", visible = true, required = false, excelAliases = listOf("search fee", "searching fee", "searching doc fee", "doc fee", "search", "رسم البحث")),
-        ColumnConfigDto("recruitmentFee", "Recruitment Fee", "Currency", visible = true, required = false, excelAliases = listOf("recruitment fee", "recruitment", "hiring fee", "رسم التوظيف")),
-        ColumnConfigDto("isForeign", "Foreign Expert", "Boolean", visible = true, required = false, excelAliases = listOf("foreign", "is foreign", "nationality", "citizenship", "alien", "اجنبي")),
+        ColumnConfigDto("absenceDays", "Absence Days", "Number", visible = true, required = false, excelAliases = listOf("absenceDays", "absencedays", "absence days", "absence_days", "absences", "absence count", "ايام الغياب", "الغياب")),
+        ColumnConfigDto("absenceDeduction", "Absence Deduction", "Currency", visible = true, required = false, excelAliases = listOf("absenceDeduction", "absencededuction", "absence deduction", "absence_deduction", "absence fee", "absence penalty", "استقطاع الغياب")),
+        ColumnConfigDto("searchingDocFee", "Search Fee (USD)", "Currency", visible = true, required = false, excelAliases = listOf("searchingDocFee", "searchingdocfee", "searching doc fee", "searching_doc_fee", "search fee", "searching fee", "doc fee", "search", "رسم البحث")),
+        ColumnConfigDto("recruitmentFee", "Recruitment Fee", "Currency", visible = true, required = false, excelAliases = listOf("recruitmentFee", "recruitmentfee", "recruitment fee", "recruitment_fee", "recruitment", "hiring fee", "رسم التوظيف")),
+        ColumnConfigDto("isForeign", "Foreign Expert", "Boolean", visible = true, required = false, excelAliases = listOf("isForeign", "isforeign", "is foreign", "is_foreign", "foreign", "nationality", "citizenship", "alien", "اجنبي")),
         ColumnConfigDto("currency", "Currency", "Text", visible = true, required = false, excelAliases = listOf("currency", "curr", "العملة")),
         ColumnConfigDto("deductions", "Total Deductions", "Currency", visible = true, required = false, excelAliases = listOf("deductions", "total deductions", "مجموع الاستقطاعات")),
-        ColumnConfigDto("netSalary", "Net Salary", "Currency", visible = true, required = false, excelAliases = listOf("net salary", "net pay", "صافي الراتب")),
-        ColumnConfigDto("salaryState", "Payment State", "Text", visible = true, required = false, excelAliases = listOf("salary state", "status", "حالة الصرف")),
+        ColumnConfigDto("netSalary", "Net Salary", "Currency", visible = true, required = false, excelAliases = listOf("netSalary", "netsalary", "net salary", "net pay", "صافي الراتب")),
+        ColumnConfigDto("salaryState", "Payment State", "Text", visible = true, required = false, excelAliases = listOf("salaryState", "salarystate", "salary state", "paymentStatus", "payment status", "status", "حالة الصرف")),
         ColumnConfigDto("email", "Email Address", "Text", visible = false, required = false, excelAliases = listOf("email", "e-mail", "mail", "البريد الالكتروني")),
         ColumnConfigDto("phone", "Phone Number", "Text", visible = false, required = false, excelAliases = listOf("phone", "mobile", "telephone", "contact", "رقم الهاتف"))
     )

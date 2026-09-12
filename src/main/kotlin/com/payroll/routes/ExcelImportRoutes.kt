@@ -13,10 +13,15 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.ByteArrayInputStream
 
+import com.payroll.domain.repository.IEmployeeRepository
+import com.payroll.domain.repository.IPeriodRepository
+
 fun Route.excelImportRoutes(
     importRepo: IImportRepository,
     auditRepo: IAuditLogRepository,
-    manageEmployeeUseCase: ManageEmployeeUseCase
+    manageEmployeeUseCase: ManageEmployeeUseCase,
+    employeeRepo: IEmployeeRepository,
+    periodRepo: IPeriodRepository
 ) {
     val excelParser = ExcelParser()
 
@@ -74,15 +79,55 @@ fun Route.excelImportRoutes(
                 var successCount = 0
                 val importErrors = parseResult.errors.toMutableList()
 
+                val existingEmployees = employeeRepo.getAll(periodId = periodId)
+                val existingByName = existingEmployees.associateBy { it.name.trim().lowercase() }
+                val existingById = existingEmployees.associateBy { it.id.trim().lowercase() }
+
                 val currentUser = call.authenticatedUser()
                 for (empReq in parseResult.employees) {
                     try {
-                        manageEmployeeUseCase.createEmployee(empReq, operator = "Excel Import ($currentUser)")
+                        val existing = (empReq.id?.let { existingById[it.trim().lowercase()] })
+                            ?: existingByName[empReq.name.trim().lowercase()]
+
+                        if (existing != null) {
+                            // Employee already exists in this period — update their details
+                            manageEmployeeUseCase.updateEmployee(
+                                id = existing.id,
+                                req = UpdateEmployeeRequest(
+                                    name = empReq.name,
+                                    initials = empReq.initials,
+                                    department = empReq.department,
+                                    type = empReq.type,
+                                    baseSalary = empReq.baseSalary,
+                                    bonus = empReq.bonus,
+                                    insurance = empReq.insurance,
+                                    absenceDays = empReq.absenceDays,
+                                    absenceDeduction = empReq.absenceDeduction,
+                                    searchingDocFee = empReq.searchingDocFee,
+                                    isForeign = empReq.isForeign,
+                                    currency = empReq.currency,
+                                    hasRecruitmentFee = empReq.hasRecruitmentFee,
+                                    recruitmentFee = empReq.recruitmentFee,
+                                    salaryState = empReq.salaryState,
+                                    joinDate = empReq.joinDate,
+                                    email = empReq.email,
+                                    phone = empReq.phone
+                                ),
+                                operator = "Excel Import ($currentUser)"
+                            )
+                        } else {
+                            // New employee enrollment
+                            manageEmployeeUseCase.createEmployee(empReq, operator = "Excel Import ($currentUser)")
+                        }
                         successCount++
                     } catch (e: Exception) {
                         importErrors.add("${empReq.name}: ${e.message}")
                     }
                 }
+
+                // Retrieve recalculated period stats
+                val updatedPeriod = periodRepo.getById(periodId)
+                val totalPayrollUpdated = updatedPeriod?.totalPayroll ?: 0.0
 
                 // Record import history
                 importRepo.create(
@@ -101,7 +146,7 @@ fun Route.excelImportRoutes(
                     CreateAuditLogRequest(
                         action = "Excel Roster Imported",
                         user = currentUser,
-                        detail = "Imported $successCount employee records into period $periodId from file $uploadedFileName (${importErrors.size} errors)",
+                        detail = "Imported/Updated $successCount employee records into period $periodId from file $uploadedFileName (${importErrors.size} errors)",
                         icon = "upload_file",
                         badgeColor = "bg-indigo-50 text-indigo-700 border border-indigo-200",
                         category = "Import"
@@ -112,11 +157,11 @@ fun Route.excelImportRoutes(
                     HttpStatusCode.Created,
                     ApiResponse(
                         success = true,
-                        message = "Excel roster imported: $successCount employees enrolled into period $periodId",
+                        message = "Excel roster imported: $successCount employees processed into period $periodId",
                         data = BatchImportResponse(
                             importedCount = successCount,
                             periodId = periodId,
-                            totalPayrollUpdated = 0.0,
+                            totalPayrollUpdated = totalPayrollUpdated,
                             message = if (importErrors.isEmpty()) "Import completed with 0 errors" else "Import completed with ${importErrors.size} warnings/errors"
                         )
                     )

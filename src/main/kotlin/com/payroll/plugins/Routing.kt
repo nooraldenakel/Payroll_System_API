@@ -42,7 +42,7 @@ fun Application.configureRouting() {
 
             // File Uploads (10 uploads / 60s per IP)
             rateLimit(UPLOAD_RATE_LIMIT) {
-                excelImportRoutes(importRepo, auditRepo, manageEmployeeUseCase)
+                excelImportRoutes(importRepo, auditRepo, manageEmployeeUseCase, employeeRepo, periodRepo)
             }
 
             // General Business Operations (120 req / 60s per IP)

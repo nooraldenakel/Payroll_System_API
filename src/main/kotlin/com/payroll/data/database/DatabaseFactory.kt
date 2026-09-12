@@ -27,7 +27,7 @@ object DatabaseFactory {
         val dbUrl = appConfig.propertyOrNull("database.url")?.getString()
             ?: "jdbc:postgresql://localhost:5432/payroll_insight_db"
         val dbUser = appConfig.propertyOrNull("database.user")?.getString() ?: "postgres"
-        val dbPassword = appConfig.propertyOrNull("database.password")?.getString() ?: "1234"
+        val dbPassword = appConfig.propertyOrNull("database.password")?.getString() ?: System.getenv("DB_PASSWORD") ?: ""
         val dbDriver = appConfig.propertyOrNull("database.driver")?.getString() ?: "org.postgresql.Driver"
         val maxPoolSize = appConfig.propertyOrNull("database.maximumPoolSize")?.getString()?.toIntOrNull() ?: 10
 
@@ -82,7 +82,8 @@ object DatabaseFactory {
         }
 
         val salt = BCrypt.gensalt(10)
-        val defaultPassHash = BCrypt.hashpw("admin123", salt)
+        val defaultAdminPass = System.getenv("DEFAULT_ADMIN_PASSWORD") ?: "admin123"
+        val defaultPassHash = BCrypt.hashpw(defaultAdminPass, salt)
 
         // 1. Seed Real System Administrative & Audit Users
         if (UsersTable.selectAll().empty()) {
@@ -109,7 +110,7 @@ object DatabaseFactory {
                     it[updatedAt] = LocalDateTime.now()
                 }
             }
-            logger.info("Seeded 4 real institutional staff accounts (Password: admin123).")
+            logger.info("Seeded 4 baseline institutional staff accounts.")
         }
 
         // 2. Seed Real Payroll Periods

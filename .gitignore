@@ -48,3 +48,10 @@ dist/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Documentation & Collections (excluded from repository)
+API_DOCUMENTATION*
+DEPLOYMENT_SECURITY_GUIDE*
+Payroll_Insight_Pro_API.postman_collection*
+Payroll_Insight_Pro.postman_environment*
+README*

@@ -1,49 +1,50 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Gradle & Kotlin Build Artifacts
+.gradle/
+build/
+.kotlin/
+out/
+bin/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# IDEs and Editors
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
 
-# testing
-/coverage
+# Environment & Secrets (NEVER COMMIT SENSITIVE DATA)
+.env*
+!.env.example
+*.secret
+*.token
+credentials*.json
+service-account*.json
+secrets/
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
+# SSL / TLS Certificates and Private Keys
 *.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
 
-# debug
+# Logs
+*.log
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Node / Frontend legacy artifacts
+node_modules/
+.next/
+dist/
+.vercel/
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-# Gradle & Kotlin
-.gradle/
-build/
-.kotlin/
-.idea/
-
-
+# OS Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini

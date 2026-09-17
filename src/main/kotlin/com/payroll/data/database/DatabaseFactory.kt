@@ -34,6 +34,7 @@ object DatabaseFactory {
 
         logger.info("Connecting to PostgreSQL at $dbUrl with user $dbUser")
 
+
         val hikariConfig = HikariConfig().apply {
             driverClassName = dbDriver
             jdbcUrl = dbUrl
@@ -127,3 +128,8 @@ object DatabaseFactory {
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }
 }
+/*
+*
+* /NO one
+*
+* */

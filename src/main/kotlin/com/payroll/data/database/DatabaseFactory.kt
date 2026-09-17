@@ -24,8 +24,7 @@ object DatabaseFactory {
     fun init(config: HoconApplicationConfig? = null) {
         val appConfig = config ?: HoconApplicationConfig(ConfigFactory.load())
 
-        val dbUrl = appConfig.propertyOrNull("database.url")?.getString()
-            ?: "jdbc:postgresql://localhost:5432/payroll_insight_db"
+        val dbUrl = appConfig.propertyOrNull("database.url")?.getString() ?: getEnvOrDotEnv("DB_URL","")
         val dbUser = appConfig.propertyOrNull("database.user")?.getString() ?: getEnvOrDotEnv("DB_USER", "postgres")
         val configuredPass = appConfig.propertyOrNull("database.password")?.getString()?.takeIf { it.isNotBlank() }
         val dbPassword = configuredPass ?: getEnvOrDotEnv("DB_PASSWORD", "")
